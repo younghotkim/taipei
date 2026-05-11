@@ -4,6 +4,7 @@ import { Download, FileText, Footprints, Gift, ImagePlus, Sparkles, Star } from 
 import { categoryLabels, type TripStop } from "@/lib/trip-data";
 import { authorLabels, combinedRating, getStopMemory, type Memory, type MemoryBook } from "@/lib/memory-types";
 import { distanceMeters } from "@/lib/integrations";
+import { type ExpenseEntry } from "@/lib/expense-ledger";
 import { TwdKrwLabel } from "./ExpenseDashboard";
 import { useItineraryContext } from "./ItineraryContext";
 
@@ -35,20 +36,21 @@ function formatKm(meters: number): string {
 
 export function RecapMode({
   memoryBook,
+  ledgerEntries = [],
   onExport,
   onSelectStop
 }: {
   memoryBook: MemoryBook;
+  ledgerEntries?: ExpenseEntry[];
   onExport: () => void;
   onSelectStop: (stop: TripStop) => void;
 }) {
   const { snapshot } = useItineraryContext();
   const tripStops = snapshot.stops;
   const tripDays = snapshot.days;
-  const totalSpent = tripStops.reduce(
-    (sum, stop) => sum + getStopMemory(memoryBook, stop.id).expenseAmount,
-    0
-  );
+  const ledgerTotal = ledgerEntries.reduce((sum, e) => sum + e.amount, 0);
+  const totalSpent =
+    tripStops.reduce((sum, stop) => sum + getStopMemory(memoryBook, stop.id).expenseAmount, 0) + ledgerTotal;
   const visited = tripStops.filter(
     (stop) => getStopMemory(memoryBook, stop.id).status === "done"
   );
@@ -68,10 +70,9 @@ export function RecapMode({
 
   const expenseByDay = tripDays.map((day) => {
     const stops = tripStops.filter((stop) => stop.day === day.day);
-    const sum = stops.reduce(
-      (acc, stop) => acc + getStopMemory(memoryBook, stop.id).expenseAmount,
-      0
-    );
+    const sum =
+      stops.reduce((acc, stop) => acc + getStopMemory(memoryBook, stop.id).expenseAmount, 0) +
+      ledgerEntries.filter((e) => e.day === day.day).reduce((acc, e) => acc + e.amount, 0);
     return { day, sum };
   });
   const dayMax = Math.max(1, ...expenseByDay.map((entry) => entry.sum));
@@ -95,6 +96,13 @@ export function RecapMode({
     },
     { y: 0, s: 0, shared: 0, unassigned: 0 }
   );
+  for (const e of ledgerEntries) {
+    if (e.amount <= 0) continue;
+    if (e.payer === "y") split.y += e.amount;
+    else if (e.payer === "s") split.s += e.amount;
+    else if (e.payer === "shared") split.shared += e.amount;
+    else split.unassigned += e.amount;
+  }
   const settleText =
     split.y === 0 && split.s === 0
       ? "결제자 미지정"

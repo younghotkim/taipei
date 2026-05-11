@@ -25,12 +25,14 @@ import {
   Search,
   Star,
   Sun,
-  Trash2
+  Trash2,
+  Wallet
 } from "lucide-react";
 import { TaiwanFlag } from "./components/TaiwanFlag";
 import { MapView } from "./components/MapView";
 import { TodayMode } from "./components/TodayMode";
 import { RecapMode } from "./components/RecapMode";
+import { LedgerMode } from "./components/LedgerMode";
 import { categoryIcon } from "./components/icons";
 import { DayWeatherBadge } from "./components/WeatherBar";
 import { PhotoUploader } from "./components/PhotoUploader";
@@ -47,6 +49,7 @@ import {
   type StopPlanMeta
 } from "@/lib/trip-data";
 import { getPlan, newStopId, stopToRow, type StopRow } from "@/lib/itinerary";
+import { useExpenses } from "@/lib/use-expenses";
 import {
   authorLabels,
   combinedRating,
@@ -61,7 +64,7 @@ import {
   type MemoryBook
 } from "@/lib/memory-types";
 
-type ShellMode = "plan" | "today" | "memories" | "recap";
+type ShellMode = "plan" | "today" | "memories" | "ledger" | "recap";
 type PlanView = "list" | "map" | "edit";
 type MemoryView = "list" | "edit";
 type SyncStatus = "local" | "loading" | "synced" | "saving" | "offline" | "error";
@@ -122,7 +125,13 @@ function pickCurrentStop(stops: TripStop[]): TripStop | null {
 }
 
 function isShellMode(value: string | null): value is ShellMode {
-  return value === "plan" || value === "today" || value === "memories" || value === "recap";
+  return (
+    value === "plan" ||
+    value === "today" ||
+    value === "memories" ||
+    value === "ledger" ||
+    value === "recap"
+  );
 }
 
 // Combine memory + itinerary sync status into one label/state for the topbar chip.
@@ -149,6 +158,7 @@ const modeLabels: Record<ShellMode, string> = {
   plan: "일정",
   today: "오늘",
   memories: "기록",
+  ledger: "가계부",
   recap: "회고"
 };
 
@@ -156,6 +166,7 @@ const modeIcons: Record<ShellMode, React.ReactNode> = {
   plan: <MapIcon size={16} />,
   today: <Sun size={16} />,
   memories: <FileText size={16} />,
+  ledger: <Wallet size={16} />,
   recap: <BarChart3 size={16} />
 };
 
@@ -180,6 +191,7 @@ function HomeShell() {
   const tripDays = snapshot.days;
   const tripStops = snapshot.stops;
   const fallbackStopId = tripStops[0]?.id ?? "";
+  const expenses = useExpenses();
 
   const [mode, setMode] = useState<ShellMode>("plan");
   const [planView, setPlanView] = useState<PlanView>("list");
@@ -289,7 +301,8 @@ function HomeShell() {
   const refreshAll = useCallback(() => {
     void loadRemoteMemories();
     void itinerary.refresh();
-  }, [loadRemoteMemories, itinerary]);
+    void expenses.refresh();
+  }, [loadRemoteMemories, itinerary, expenses]);
 
   const selectDay = (day: number) => {
     setActiveDay(day);
@@ -598,9 +611,25 @@ function HomeShell() {
         />
       )}
 
+      {mode === "ledger" && (
+        <LedgerMode
+          memoryBook={memoryBook}
+          ledger={expenses.entries}
+          todayTripDay={isoDayMap[todayIso()] ?? null}
+          onAdd={expenses.addEntry}
+          onRemove={expenses.removeEntry}
+          onSelectStop={(stop) => {
+            handleSelectStop(stop);
+            setMemoryView("edit");
+            setMode("memories");
+          }}
+        />
+      )}
+
       {mode === "recap" && (
         <RecapMode
           memoryBook={memoryBook}
+          ledgerEntries={expenses.entries}
           onExport={exportMemories}
           onSelectStop={(stop) => {
             handleSelectStop(stop);

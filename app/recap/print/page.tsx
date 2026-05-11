@@ -11,6 +11,7 @@ import {
 } from "@/lib/trip-data";
 import { getPlan } from "@/lib/itinerary";
 import { useItinerary } from "@/lib/use-itinerary";
+import { normalizeLedger } from "@/lib/expense-ledger";
 import {
   authorLabels,
   emptyMemory,
@@ -36,6 +37,7 @@ export default function RecapPrintPage() {
   const tripDays = snapshot.days;
   const plans = snapshot.plans;
   const [memoryBook, setMemoryBook] = useState<MemoryBook>({});
+  const [ledgerTotal, setLedgerTotal] = useState(0);
   const [exchangeRate, setExchangeRate] = useState<number | null>(null);
 
   useEffect(() => {
@@ -65,12 +67,16 @@ export default function RecapPrintPage() {
         if (typeof payload?.rate === "number") setExchangeRate(payload.rate);
       })
       .catch(() => {});
+    void fetch("/api/expenses")
+      .then((response) => (response.ok ? response.json() : null))
+      .then((payload: { entries?: unknown } | null) => {
+        if (payload) setLedgerTotal(normalizeLedger(payload.entries).reduce((s, e) => s + e.amount, 0));
+      })
+      .catch(() => {});
   }, []);
 
-  const totalSpent = tripStops.reduce(
-    (sum, stop) => sum + getStopMemory(memoryBook, stop.id).expenseAmount,
-    0
-  );
+  const totalSpent =
+    tripStops.reduce((sum, stop) => sum + getStopMemory(memoryBook, stop.id).expenseAmount, 0) + ledgerTotal;
   const stopsByDay = tripDays.map((day) => ({
     day,
     stops: tripStops.filter((stop) => stop.day === day.day)

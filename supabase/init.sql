@@ -142,7 +142,29 @@ create index if not exists trip_essentials_trip_sort_idx
 alter table public.trip_essentials enable row level security;
 
 -- ---------------------------------------------------------------------------
--- 6. Storage bucket — 사진 업로드 (PhotoUploader 컴포넌트가 사용)
+-- 6. trip_expenses — 가계부 (스톱과 무관한 지출: 편의점/교통/간식 등)
+-- ---------------------------------------------------------------------------
+
+create table if not exists public.trip_expenses (
+  trip_id text not null,
+  id text not null,
+  day integer not null default 0,
+  amount integer not null default 0 check (amount >= 0),
+  category text not null default 'none',
+  payer text not null default 'none',
+  label text not null default '',
+  at timestamptz not null default now(),
+  primary key (trip_id, id)
+);
+
+create index if not exists trip_expenses_trip_idx
+  on public.trip_expenses (trip_id, day, at);
+
+alter table public.trip_expenses enable row level security;
+-- writes go through the Next.js server route with the service-role key
+
+-- ---------------------------------------------------------------------------
+-- 7. Storage bucket — 사진 업로드 (PhotoUploader 컴포넌트가 사용)
 -- ---------------------------------------------------------------------------
 
 insert into storage.buckets (id, name, public)
