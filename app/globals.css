@@ -1639,7 +1639,7 @@ a {
 
 .recap-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -1688,6 +1688,31 @@ a {
   font-size: 11px;
   font-weight: 700;
   margin-top: 2px;
+}
+
+.recap-card span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.recap-card span svg {
+  flex-shrink: 0;
+}
+
+.recap-card--walk {
+  border-color: rgba(80, 240, 200, 0.3);
+  background:
+    linear-gradient(180deg, rgba(80, 240, 200, 0.08), transparent),
+    rgba(14, 6, 36, 0.86);
+}
+
+.recap-card--walk span {
+  color: rgb(120, 245, 210);
+}
+
+.recap-card--walk strong {
+  color: rgb(150, 250, 220);
 }
 
 .recap-chart {
@@ -1751,6 +1776,24 @@ a {
   background: linear-gradient(180deg, var(--neon-pink), var(--neon-cyan));
   border-radius: 8px 8px 4px 4px;
   box-shadow: 0 0 14px rgba(255, 45, 149, 0.28);
+}
+
+.recap-bar__fill--walk {
+  background: linear-gradient(180deg, rgb(120, 245, 210), var(--neon-cyan));
+  box-shadow: 0 0 14px rgba(80, 240, 200, 0.3);
+}
+
+.recap-chart--walk header strong {
+  color: rgb(120, 245, 210);
+}
+
+.recap-chart--walk header span {
+  margin-left: auto;
+  color: var(--muted-dim);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .recap-bar span {

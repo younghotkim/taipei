@@ -1,10 +1,31 @@
 "use client";
 
-import { Download, FileText, ImagePlus, Sparkles, Star } from "lucide-react";
+import { Download, FileText, Footprints, ImagePlus, Sparkles, Star } from "lucide-react";
 import { type TripStop } from "@/lib/trip-data";
 import { authorLabels, getStopMemory, type MemoryBook } from "@/lib/memory-types";
+import { distanceMeters } from "@/lib/integrations";
 import { TwdKrwLabel } from "./ExpenseDashboard";
 import { useItineraryContext } from "./ItineraryContext";
+
+// 연속 스톱 간 직선거리에 도시 보행 디투어 보정(×1.3)을 적용해 "도보 추정 거리"를 만든다.
+// 2km를 넘는 구간은 MRT/택시로 이동했다고 보고 제외한다.
+const WALK_DETOUR_FACTOR = 1.3;
+const WALK_LEG_CAP_M = 2000;
+
+function walkMetersForStops(stops: TripStop[]): number {
+  const ordered = [...stops].sort((a, b) => a.time.localeCompare(b.time));
+  let meters = 0;
+  for (let i = 1; i < ordered.length; i += 1) {
+    const leg = distanceMeters(ordered[i - 1], ordered[i]);
+    if (leg > 0 && leg <= WALK_LEG_CAP_M) meters += leg * WALK_DETOUR_FACTOR;
+  }
+  return meters;
+}
+
+function formatKm(meters: number): string {
+  if (meters < 950) return `${Math.round(meters / 10) * 10} m`;
+  return `${(meters / 1000).toFixed(1)} km`;
+}
 
 export function RecapMode({
   memoryBook,
@@ -48,6 +69,13 @@ export function RecapMode({
     return { day, sum };
   });
   const dayMax = Math.max(1, ...expenseByDay.map((entry) => entry.sum));
+
+  const walkByDay = tripDays.map((day) => ({
+    day,
+    meters: walkMetersForStops(tripStops.filter((stop) => stop.day === day.day))
+  }));
+  const walkTotalM = walkByDay.reduce((acc, entry) => acc + entry.meters, 0);
+  const walkDayMax = Math.max(1, ...walkByDay.map((entry) => entry.meters));
 
   const split = tripStops.reduce(
     (acc, stop) => {
@@ -116,6 +144,11 @@ export function RecapMode({
           <strong>{written.length}</strong>
           <small>스톱</small>
         </article>
+        <article className="recap-card recap-card--walk">
+          <span><Footprints size={12} /> 도보 추정</span>
+          <strong>{formatKm(walkTotalM)}</strong>
+          <small>스톱 간 이동, 대략</small>
+        </article>
       </section>
 
       <section className="recap-settle">
@@ -159,6 +192,27 @@ export function RecapMode({
               />
               <span>{entry.day.date}</span>
               <strong>{entry.sum.toLocaleString()}</strong>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="recap-chart recap-chart--walk">
+        <header>
+          <Footprints size={16} />
+          <strong>일자별 도보 추정</strong>
+          <span>스톱 사이 직선거리 × 1.3 · 2km 초과 구간(MRT/택시) 제외</span>
+        </header>
+        <div className="recap-chart__bars">
+          {walkByDay.map((entry) => (
+            <div key={entry.day.day} className="recap-bar">
+              <div
+                className="recap-bar__fill recap-bar__fill--walk"
+                style={{ height: `${(entry.meters / walkDayMax) * 100}%` }}
+                aria-label={`Day ${entry.day.day} ${Math.round(entry.meters)}m`}
+              />
+              <span>{entry.day.date}</span>
+              <strong>{formatKm(entry.meters)}</strong>
             </div>
           ))}
         </div>
