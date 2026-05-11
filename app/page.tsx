@@ -442,7 +442,7 @@ function HomeShell() {
 
   const exportMemories = () => {
     const payload = {
-      title: "Taipei Trip Diary",
+      title: "Y & S Taipei — Trip Diary",
       exportedAt: new Date().toISOString(),
       memories: memoryBook
     };
@@ -493,8 +493,8 @@ function HomeShell() {
           </span>
           <div className="brand__copy">
             <strong>
-              <span className="brand__zh">台北</span>
-              <span className="brand__en">Y &amp; S</span>
+              <span className="brand__zh">Y&amp;S</span>
+              <span className="brand__en">台北</span>
             </strong>
             <small>
               <span className="brand__dot" aria-hidden="true" />

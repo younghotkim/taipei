@@ -196,11 +196,11 @@ a {
 
 .brand__zh {
   flex: 0 0 auto;
-  font-family: "Noto Sans TC", Bungee, sans-serif;
+  font-family: Bungee, "Noto Sans TC", sans-serif;
   font-weight: 900;
-  font-size: 24px;
+  font-size: 22px;
   line-height: 1;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   color: var(--neon-pink);
   text-shadow: 0 0 4px rgba(255, 45, 149, 0.45);
 }
@@ -209,9 +209,10 @@ a {
   flex: 0 1 auto;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-family: Bungee, Inter, sans-serif;
-  font-size: 13px;
-  letter-spacing: 0.2em;
+  font-family: "Noto Sans TC", Inter, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.04em;
   color: var(--neon-cyan);
   text-shadow: 0 0 4px rgba(0, 232, 255, 0.35);
 }
@@ -1242,12 +1243,12 @@ a {
   }
 
   .brand__zh {
-    font-size: 20px;
+    font-size: 19px;
   }
 
   .brand__en {
-    font-size: 11px;
-    letter-spacing: 0.16em;
+    font-size: 13px;
+    letter-spacing: 0.04em;
   }
 
   .brand small {

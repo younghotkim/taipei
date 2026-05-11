@@ -90,7 +90,7 @@ export default function RecapPrintPage() {
         <header>
           <TaiwanFlag className="print-flag" />
           <div>
-            <h1>台北 Y &amp; S Trip Diary</h1>
+            <h1>Y &amp; S Taipei — Trip Diary</h1>
             <p>5/15 — 5/18 · 西門町 NEON DIARY</p>
           </div>
         </header>
