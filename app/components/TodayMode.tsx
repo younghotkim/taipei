@@ -203,11 +203,23 @@ export function TodayMode({
   const stops = snapshot.stops;
   const days = snapshot.days;
   const [clock, setClock] = useState(() => new Date());
+  const [toast, setToast] = useState<{ id: number; text: string; type: "done" | "skip" } | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const id = setInterval(() => setClock(new Date()), 30_000);
     return () => clearInterval(id);
   }, []);
+
+  useEffect(() => () => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+  }, []);
+
+  const flash = (text: string, type: "done" | "skip") => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    setToast({ id: Date.now(), text, type });
+    toastTimerRef.current = setTimeout(() => setToast(null), 2700);
+  };
 
   const memOf = (id: string) => getStopMemory(memoryBook, id);
   const isCleared = (s: TripStop) => {
@@ -246,9 +258,20 @@ export function TodayMode({
 
   const completeQuest = (stop: TripStop) => {
     onUpdateMemory(stop.id, { status: "done", visited: true });
+    const remaining = stops.filter((s) => !isCleared(s) && s.id !== stop.id);
+    const dayWrap = stops.filter((s) => s.day === stop.day).every((s) => s.id === stop.id || isCleared(s));
+    flash(
+      remaining.length === 0
+        ? `🇹🇼 여정 완료! ${stop.title} 까지 완주`
+        : dayWrap
+          ? `🏆 Day ${stop.day} 클리어! · ${stop.title}`
+          : `🎉 ${stop.title} 클리어!`,
+      "done"
+    );
   };
   const skipQuest = (stop: TripStop) => {
     onUpdateMemory(stop.id, { status: "skipped" });
+    flash(`⏭ 스킵: ${stop.title}`, "skip");
   };
 
   const currentPlan: StopPlanMeta | null = currentQuest ? getPlan(snapshot.plans, currentQuest.id) : null;
@@ -273,6 +296,11 @@ export function TodayMode({
 
   return (
     <div className="journey-stage">
+      {toast && (
+        <div key={toast.id} className={`quest-toast quest-toast--${toast.type}`} role="status">
+          {toast.text}
+        </div>
+      )}
       {/* ── Progress / timeline ── */}
       <section className="journey-progress">
         <div className="journey-progress__head">
