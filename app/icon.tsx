@@ -20,16 +20,16 @@ export default function Icon() {
           color: "#04081e"
         }}
       >
-        <div style={{ fontSize: 220, lineHeight: 1 }}>🇹🇼</div>
+        <div style={{ fontSize: 210, lineHeight: 1 }}>🇹🇼</div>
         <div
           style={{
-            fontSize: 120,
+            fontSize: 124,
             fontWeight: 900,
             color: "#fff",
-            letterSpacing: "0.02em"
+            letterSpacing: "0.04em"
           }}
         >
-          台北
+          Y&amp;S
         </div>
       </div>
     ),
