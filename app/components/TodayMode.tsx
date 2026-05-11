@@ -30,9 +30,13 @@ import {
 import { getPlan } from "@/lib/itinerary";
 import {
   authorLabels,
+  expenseCategoryLabels,
+  expensePayerLabels,
   getStopMemory,
   newCommentId,
   type CommentAuthor,
+  type ExpenseCategory,
+  type ExpensePayer,
   type Memory,
   type MemoryBook
 } from "@/lib/memory-types";
@@ -147,6 +151,35 @@ function CompactCapture({
             <Send size={14} />
           </button>
         </div>
+      </div>
+      <div className="quest-capture__expense">
+        <label className="quest-expense__amount">
+          <span>지출 TWD</span>
+          <input
+            inputMode="numeric"
+            value={memory.expenseAmount ? String(memory.expenseAmount) : ""}
+            onChange={(e) => onChange({ expenseAmount: Number(e.target.value.replace(/[^0-9]/g, "")) || 0 })}
+            placeholder="0"
+          />
+        </label>
+        <select
+          value={memory.expenseCategory}
+          onChange={(e) => onChange({ expenseCategory: e.target.value as ExpenseCategory })}
+          aria-label="지출 분류"
+        >
+          {(Object.keys(expenseCategoryLabels) as ExpenseCategory[]).map((c) => (
+            <option key={c} value={c}>{c === "none" ? "분류" : expenseCategoryLabels[c]}</option>
+          ))}
+        </select>
+        <select
+          value={memory.expensePayer}
+          onChange={(e) => onChange({ expensePayer: e.target.value as ExpensePayer })}
+          aria-label="결제자"
+        >
+          {(Object.keys(expensePayerLabels) as ExpensePayer[]).map((p) => (
+            <option key={p} value={p}>{p === "none" ? "결제자" : expensePayerLabels[p]}</option>
+          ))}
+        </select>
       </div>
       <div className="quest-capture__photo">
         <button

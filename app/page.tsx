@@ -50,8 +50,12 @@ import { getPlan, newStopId, stopToRow, type StopRow } from "@/lib/itinerary";
 import {
   authorLabels,
   emptyMemory,
+  expenseCategoryLabels,
+  expensePayerLabels,
   getStopMemory,
   isMemoryBook,
+  type ExpenseCategory,
+  type ExpensePayer,
   type Memory,
   type MemoryBook
 } from "@/lib/memory-types";
@@ -159,23 +163,6 @@ const statusLabels: Record<TripStatus, string> = {
   going: "가는 중",
   done: "완료",
   skipped: "스킵"
-};
-
-const expenseLabels: Record<Memory["expenseCategory"], string> = {
-  none: "미지정",
-  food: "음식",
-  drink: "술/카페",
-  transport: "교통",
-  shopping: "쇼핑",
-  ticket: "입장/예약",
-  etc: "기타"
-};
-
-const payerLabels: Record<Memory["expensePayer"], string> = {
-  none: "미지정",
-  y: "Y",
-  s: "S",
-  shared: "공동"
 };
 
 export default function Home() {
@@ -1178,12 +1165,12 @@ function MemoryEditor({
           <select
             value={memory.expenseCategory}
             onChange={(event) =>
-              onChange({ expenseCategory: event.target.value as Memory["expenseCategory"] })
+              onChange({ expenseCategory: event.target.value as ExpenseCategory })
             }
           >
-            {(Object.keys(expenseLabels) as Memory["expenseCategory"][]).map((category) => (
+            {(Object.keys(expenseCategoryLabels) as ExpenseCategory[]).map((category) => (
               <option key={category} value={category}>
-                {expenseLabels[category]}
+                {expenseCategoryLabels[category]}
               </option>
             ))}
           </select>
@@ -1193,12 +1180,12 @@ function MemoryEditor({
           <select
             value={memory.expensePayer}
             onChange={(event) =>
-              onChange({ expensePayer: event.target.value as Memory["expensePayer"] })
+              onChange({ expensePayer: event.target.value as ExpensePayer })
             }
           >
-            {(Object.keys(payerLabels) as Memory["expensePayer"][]).map((payer) => (
+            {(Object.keys(expensePayerLabels) as ExpensePayer[]).map((payer) => (
               <option key={payer} value={payer}>
-                {payerLabels[payer]}
+                {payer === "none" ? "미지정" : expensePayerLabels[payer]}
               </option>
             ))}
           </select>

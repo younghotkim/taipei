@@ -3612,6 +3612,55 @@ a {
   color: var(--muted-dim);
 }
 
+/* expense row inside the quest capture */
+.quest-capture__expense {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
+  align-items: end;
+}
+
+.quest-expense__amount {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.quest-expense__amount span {
+  color: var(--neon-pink);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.quest-capture__expense input,
+.quest-capture__expense select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  outline: 0;
+  background: rgba(7, 4, 22, 0.7);
+  color: var(--ink);
+  padding: 11px 12px;
+  font-weight: 500;
+}
+
+.quest-capture__expense select {
+  appearance: none;
+}
+
+.quest-capture__expense input:focus,
+.quest-capture__expense select:focus {
+  border-color: var(--neon-pink);
+  box-shadow: 0 0 0 2px rgba(255, 45, 149, 0.16);
+}
+
+.quest-capture__expense input::placeholder {
+  color: var(--muted-dim);
+}
+
 .quest-photo-btn {
   display: inline-flex;
   align-items: center;
@@ -4069,6 +4118,14 @@ a {
 
   .quest-complete {
     order: -1;
+  }
+
+  .quest-capture__expense {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .quest-expense__amount {
+    grid-column: 1 / -1;
   }
 
   .journey-side {

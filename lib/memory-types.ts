@@ -17,6 +17,26 @@ export const authorInitials: Record<CommentAuthor, string> = {
   sohyun: "소"
 };
 
+export type ExpenseCategory = "none" | "food" | "drink" | "transport" | "shopping" | "ticket" | "etc";
+export type ExpensePayer = "none" | "y" | "s" | "shared";
+
+export const expenseCategoryLabels: Record<ExpenseCategory, string> = {
+  none: "미지정",
+  food: "음식",
+  drink: "술/카페",
+  transport: "교통",
+  shopping: "쇼핑",
+  ticket: "입장/예약",
+  etc: "기타"
+};
+
+export const expensePayerLabels: Record<ExpensePayer, string> = {
+  none: "결제자",
+  y: "영하",
+  s: "소현",
+  shared: "공동"
+};
+
 export type Memory = {
   visited: boolean;
   status: "planned" | "going" | "done" | "skipped";
@@ -26,8 +46,8 @@ export type Memory = {
   photoUrl: string;
   photos: string[];
   expenseAmount: number;
-  expenseCategory: "none" | "food" | "drink" | "transport" | "shopping" | "ticket" | "etc";
-  expensePayer: "none" | "y" | "s" | "shared";
+  expenseCategory: ExpenseCategory;
+  expensePayer: ExpensePayer;
   skippedReason: string;
   updatedAt?: string;
 };
