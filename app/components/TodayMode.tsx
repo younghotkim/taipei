@@ -249,6 +249,7 @@ export function TodayMode({
   const [clock, setClock] = useState(() => new Date());
   const [toast, setToast] = useState<{ id: number; text: string; type: "done" | "skip" } | null>(null);
   const [notifyEnabled, setNotifyEnabled] = useState(false);
+  const [notifySupported, setNotifySupported] = useState(false);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const firedNotifsRef = useRef<Set<string>>(new Set());
 
@@ -263,7 +264,9 @@ export function TodayMode({
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (window.localStorage.getItem(notifyStorageKey) === "1" && typeof Notification !== "undefined" && Notification.permission === "granted") {
+    const supported = "Notification" in window;
+    setNotifySupported(supported);
+    if (supported && window.localStorage.getItem(notifyStorageKey) === "1" && Notification.permission === "granted") {
       setNotifyEnabled(true);
     }
   }, []);
@@ -650,23 +653,27 @@ export function TodayMode({
         onUpdateMemory={onUpdateMemory}
         onSelectStop={onSelectStop}
       />
-      {typeof Notification !== "undefined" && (
-        <div className={notifyEnabled ? "quest-notify quest-notify--on" : "quest-notify"}>
-          <header>
-            {notifyEnabled ? <Bell size={16} /> : <BellOff size={16} />}
-            <strong>일정 알림</strong>
+      <div className={notifyEnabled ? "quest-notify quest-notify--on" : "quest-notify"}>
+        <header>
+          {notifyEnabled ? <Bell size={16} /> : <BellOff size={16} />}
+          <strong>일정 알림</strong>
+          {notifySupported ? (
             <label className="quest-notify__toggle">
               <input type="checkbox" checked={notifyEnabled} onChange={() => void toggleNotify()} />
               <span>{notifyEnabled ? "켜짐" : "꺼짐"}</span>
             </label>
-          </header>
-          <p>
-            {notifyEnabled
-              ? "여행 당일, 스톱 예정 시각이 되면 알림이 떠요 (앱이 열려있을 때)."
-              : "켜면 스톱 예정 시각에 브라우저 알림. 브라우저/OS 알림 권한 필요."}
-          </p>
-        </div>
-      )}
+          ) : (
+            <span className="quest-notify__na">미지원</span>
+          )}
+        </header>
+        <p>
+          {!notifySupported
+            ? "이 브라우저는 알림을 지원하지 않아요. 아이폰은 '홈 화면에 추가'(설치)한 뒤 열면 알림을 켤 수 있고, 안드로이드 Chrome은 바로 됩니다. (인앱 리마인더 배너는 어디서나 떠요.)"
+            : notifyEnabled
+              ? "여행 당일, 스톱 예정 시각이 되면 알림이 떠요 — 앱(탭)이 열려있을 때."
+              : "켜면 스톱 예정 시각에 브라우저 알림. 권한 요청이 한 번 떠요."}
+        </p>
+      </div>
 
       {/* ── Journey log ── */}
       <section className="journey-log">

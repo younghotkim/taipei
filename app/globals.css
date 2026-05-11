@@ -3913,6 +3913,19 @@ a {
   accent-color: var(--neon-cyan);
 }
 
+.quest-notify__na {
+  margin-left: auto;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted-dim);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 .quest-notify p {
   margin: 0;
   color: var(--muted);
