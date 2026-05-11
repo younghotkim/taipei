@@ -32,6 +32,7 @@ import {
 import { getPlan } from "@/lib/itinerary";
 import {
   authorLabels,
+  combinedRating,
   expenseCategoryLabels,
   expensePayerLabels,
   getStopMemory,
@@ -109,16 +110,26 @@ function CompactCapture({
 
   return (
     <div className="quest-capture">
-      <div className="quest-capture__rating">
-        {[1, 2, 3, 4, 5].map((s) => (
-          <button
-            key={s}
-            className={s <= memory.rating ? "quest-star quest-star--on" : "quest-star"}
-            onClick={() => onChange({ rating: s })}
-            aria-label={`${s}점`}
-          >
-            <Star size={20} fill={s <= memory.rating ? "currentColor" : "none"} />
-          </button>
+      <div className="quest-capture__ratings">
+        {([
+          ["youngha", "영하", memory.ratingY, (v: number) => onChange({ ratingY: v })],
+          ["sohyun", "소현", memory.ratingS, (v: number) => onChange({ ratingS: v })]
+        ] as const).map(([key, label, value, set]) => (
+          <div key={key} className={`quest-rating-row quest-rating-row--${key}`}>
+            <span className="quest-rating-row__who">{label}</span>
+            <div className="quest-capture__rating">
+              {[1, 2, 3, 4, 5].map((s) => (
+                <button
+                  key={s}
+                  className={s <= value ? "quest-star quest-star--on" : "quest-star"}
+                  onClick={() => set(s === value ? 0 : s)}
+                  aria-label={`${label} ${s}점`}
+                >
+                  <Star size={18} fill={s <= value ? "currentColor" : "none"} />
+                </button>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
       <div className="quest-capture__comment">
@@ -701,7 +712,7 @@ export function TodayMode({
                     <strong>{s.time} {s.title}</strong>
                     <small>
                       Day {s.day} · {categoryLabels[s.category]}
-                      {m.rating > 0 && ` · ${"★".repeat(m.rating)}`}
+                      {combinedRating(m) > 0 && ` · ★ ${combinedRating(m)}`}
                       {m.comments.length > 0 && ` · 💬${m.comments.length}`}
                       {m.photos.length > 0 && ` · 📷${m.photos.length}`}
                       {m.expenseAmount > 0 && ` · TWD ${m.expenseAmount.toLocaleString()}`}

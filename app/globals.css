@@ -950,6 +950,48 @@ a {
   color: var(--neon-gold);
 }
 
+.rating-pair {
+  display: grid;
+  gap: 8px;
+}
+
+.rating-line {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(20, 9, 46, 0.5);
+}
+
+.rating-line--youngha {
+  border-left: 3px solid var(--neon-pink);
+}
+
+.rating-line--sohyun {
+  border-left: 3px solid var(--neon-cyan);
+}
+
+.rating-line__who {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--muted);
+}
+
+.rating-line--youngha .rating-line__who {
+  color: var(--neon-pink);
+}
+
+.rating-line--sohyun .rating-line__who {
+  color: var(--neon-cyan);
+}
+
+.rating-line .rating__star {
+  height: 38px;
+}
+
 .field {
   display: grid;
   gap: 8px;
@@ -1817,6 +1859,123 @@ a {
   color: var(--muted-dim);
   font-weight: 700;
   font-size: 13px;
+}
+
+/* ---- Trip Wrapped ---- */
+.recap-wrapped {
+  padding: 20px;
+  border: 1px solid rgba(179, 98, 255, 0.28);
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, rgba(179, 98, 255, 0.12), rgba(255, 45, 149, 0.06) 55%, transparent),
+    rgba(14, 6, 36, 0.86);
+}
+
+.recap-wrapped header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  color: rgb(206, 160, 255);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.recap-wrapped header strong {
+  color: rgb(206, 160, 255);
+}
+
+.recap-wrapped header span {
+  margin-left: auto;
+  color: var(--muted-dim);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.recap-wrapped__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.recap-wrapped__card {
+  display: grid;
+  align-content: start;
+  gap: 3px;
+  padding: 14px;
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  background: rgba(20, 9, 46, 0.7);
+}
+
+.recap-wrapped__card > span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.recap-wrapped__card > strong {
+  color: #fff;
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1.2;
+  margin-top: 3px;
+}
+
+.recap-wrapped__card > small {
+  color: var(--muted-dim);
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 1px;
+}
+
+.recap-wrapped__card--tap {
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.15s, background 0.15s;
+}
+
+.recap-wrapped__card--tap:hover {
+  transform: translateY(-2px);
+  border-color: rgba(179, 98, 255, 0.5);
+}
+
+.recap-wrapped__card--hero {
+  grid-column: span 2;
+  border-color: rgba(179, 98, 255, 0.5);
+  background: linear-gradient(135deg, rgba(179, 98, 255, 0.22), rgba(0, 232, 255, 0.08));
+}
+
+.recap-wrapped__card--hero > strong {
+  font-family: Bungee, Inter, sans-serif;
+  font-size: 32px;
+  color: rgb(216, 178, 255);
+}
+
+.recap-wrapped__card--wide {
+  grid-column: 1 / -1;
+}
+
+.recap-wrapped__card--y {
+  border-left: 3px solid var(--neon-pink);
+}
+
+.recap-wrapped__card--y > span {
+  color: var(--neon-pink);
+}
+
+.recap-wrapped__card--s {
+  border-left: 3px solid var(--neon-cyan);
+}
+
+.recap-wrapped__card--s > span {
+  color: var(--neon-cyan);
 }
 
 .recap-stories {
@@ -3592,10 +3751,43 @@ a {
   gap: 12px;
 }
 
+.quest-capture__ratings {
+  display: grid;
+  gap: 8px;
+}
+
+.quest-rating-row {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(20, 9, 46, 0.5);
+}
+
+.quest-rating-row--youngha { border-left: 3px solid var(--neon-pink); }
+.quest-rating-row--sohyun { border-left: 3px solid var(--neon-cyan); }
+
+.quest-rating-row__who {
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--muted);
+}
+
+.quest-rating-row--youngha .quest-rating-row__who { color: var(--neon-pink); }
+.quest-rating-row--sohyun .quest-rating-row__who { color: var(--neon-cyan); }
+
 .quest-capture__rating {
   display: flex;
   gap: 6px;
-  justify-content: center;
+  justify-content: flex-start;
+}
+
+.quest-rating-row .quest-star {
+  width: 36px;
+  height: 36px;
 }
 
 .quest-star {

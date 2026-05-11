@@ -143,7 +143,9 @@ export default function RecapPrintPage() {
                   <span>{priorityLabels[plan.priority]} · {plan.durationMinutes}분</span>
                   <span>{stop.mrt}</span>
                   <span>{statusLabels[memory.status]}</span>
-                  {memory.rating > 0 && <span>{"★".repeat(memory.rating)}</span>}
+                  {(memory.ratingY > 0 || memory.ratingS > 0) && (
+                    <span>영하 {memory.ratingY || "·"} / 소현 {memory.ratingS || "·"}</span>
+                  )}
                   {memory.expenseAmount > 0 && (
                     <span>TWD {memory.expenseAmount.toLocaleString()}</span>
                   )}

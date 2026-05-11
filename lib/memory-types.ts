@@ -40,7 +40,9 @@ export const expensePayerLabels: Record<ExpensePayer, string> = {
 export type Memory = {
   visited: boolean;
   status: "planned" | "going" | "done" | "skipped";
-  rating: number;
+  rating: number; // legacy combined rating — kept for back-compat; UI now uses ratingY/ratingS
+  ratingY: number; // 영하's star rating, 0–5
+  ratingS: number; // 소현's star rating, 0–5
   note: string;
   comments: Comment[];
   photoUrl: string;
@@ -59,11 +61,20 @@ export function newCommentId(): string {
   return `c-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+/** Single rating value for displays that want one number: average of whoever rated, else the legacy field. */
+export function combinedRating(m: Pick<Memory, "ratingY" | "ratingS" | "rating">): number {
+  const given = [m.ratingY, m.ratingS].filter((v) => v > 0);
+  if (given.length === 0) return m.rating || 0;
+  return Math.round((given.reduce((a, b) => a + b, 0) / given.length) * 10) / 10;
+}
+
 export function emptyMemory(): Memory {
   return {
     visited: false,
     status: "planned",
     rating: 0,
+    ratingY: 0,
+    ratingS: 0,
     note: "",
     comments: [],
     photoUrl: "",
@@ -162,10 +173,17 @@ export function normalizeMemory(value: unknown): Memory {
       ? candidate.expensePayer
       : base.expensePayer;
 
+  const clampStar = (v: unknown): number => {
+    if (typeof v !== "number" || !Number.isFinite(v)) return 0;
+    return Math.max(0, Math.min(5, Math.round(v)));
+  };
+
   return {
     visited: Boolean(candidate.visited || status === "done"),
     status,
     rating: typeof candidate.rating === "number" ? candidate.rating : base.rating,
+    ratingY: clampStar(candidate.ratingY),
+    ratingS: clampStar(candidate.ratingS),
     note: typeof candidate.note === "string" ? candidate.note : base.note,
     comments: normalizeComments(candidate.comments, {
       yComment: candidate.yComment,

@@ -14,6 +14,8 @@ create table if not exists public.trip_memories (
   status text not null default 'planned'
     check (status in ('planned', 'going', 'done', 'skipped')),
   rating integer not null default 0 check (rating >= 0 and rating <= 5),
+  rating_y integer not null default 0 check (rating_y >= 0 and rating_y <= 5),
+  rating_s integer not null default 0 check (rating_s >= 0 and rating_s <= 5),
   note text not null default '',
   comments jsonb not null default '[]'::jsonb,
   y_comment text not null default '',
@@ -46,6 +48,8 @@ alter table public.trip_memories add column if not exists skipped_reason text no
 alter table public.trip_memories add column if not exists photos text[] not null default '{}';
 alter table public.trip_memories add column if not exists expense_payer text not null default 'none';
 alter table public.trip_memories add column if not exists comments jsonb not null default '[]'::jsonb;
+alter table public.trip_memories add column if not exists rating_y integer not null default 0;
+alter table public.trip_memories add column if not exists rating_s integer not null default 0;
 
 -- ---------------------------------------------------------------------------
 -- 2. trip_days — Day 메타 (제목, 무드, 요약)

@@ -6,6 +6,8 @@ export type TripMemoryRow = {
   visited: boolean;
   status: string;
   rating: number;
+  rating_y?: number;
+  rating_s?: number;
   note: string;
   comments: unknown;
   y_comment?: string;

@@ -49,6 +49,7 @@ import {
 import { getPlan, newStopId, stopToRow, type StopRow } from "@/lib/itinerary";
 import {
   authorLabels,
+  combinedRating,
   emptyMemory,
   expenseCategoryLabels,
   expensePayerLabels,
@@ -1010,7 +1011,7 @@ function MemoriesShell({
                 )}
                 <span className="memory-item__meta">
                   {statusLabels[memory.status]}
-                  <span>{memory.rating ? "★".repeat(memory.rating) : "별점 전"}</span>
+                  <span>{combinedRating(memory) ? `★ ${combinedRating(memory)}` : "별점 전"}</span>
                   {memory.comments.length > 0 && <span>💬 {memory.comments.length}</span>}
                   {memory.expenseAmount > 0 && <span>TWD {memory.expenseAmount.toLocaleString()}</span>}
                 </span>
@@ -1111,16 +1112,26 @@ function MemoryEditor({
           </button>
         ))}
       </div>
-      <div className="rating" aria-label={`${stop.title} 별점`}>
-        {[1, 2, 3, 4, 5].map((score) => (
-          <button
-            key={score}
-            className={score <= memory.rating ? "rating__star rating__star--on" : "rating__star"}
-            onClick={() => onChange({ rating: score })}
-            title={`${score}점`}
-          >
-            <Star size={18} fill={score <= memory.rating ? "currentColor" : "none"} />
-          </button>
+      <div className="rating-pair">
+        {([
+          ["youngha", "영하", memory.ratingY, (v: number) => onChange({ ratingY: v })],
+          ["sohyun", "소현", memory.ratingS, (v: number) => onChange({ ratingS: v })]
+        ] as const).map(([key, label, value, set]) => (
+          <div key={key} className={`rating-line rating-line--${key}`}>
+            <span className="rating-line__who">{label}</span>
+            <div className="rating" role="group" aria-label={`${label} ${stop.title} 별점`}>
+              {[1, 2, 3, 4, 5].map((score) => (
+                <button
+                  key={score}
+                  className={score <= value ? "rating__star rating__star--on" : "rating__star"}
+                  onClick={() => set(score === value ? 0 : score)}
+                  title={`${score}점`}
+                >
+                  <Star size={18} fill={score <= value ? "currentColor" : "none"} />
+                </button>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
       <CommentThread
