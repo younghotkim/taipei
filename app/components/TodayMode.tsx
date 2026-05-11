@@ -2,11 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
+  Bell,
+  BellOff,
   Camera,
   Check,
   Clock,
   Loader2,
-  MapPin,
+  Navigation,
   Send,
   SkipForward,
   Sparkles,
@@ -221,14 +223,23 @@ function CompactCapture({
   );
 }
 
+const notifyStorageKey = "taipei-trip-quest-notify-v1";
+
+const dirUrl = (lat: number, lng: number) =>
+  `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=walking`;
+const nearUrl = (query: string, lat: number, lng: number) =>
+  `https://www.google.com/maps/search/${encodeURIComponent(query)}/@${lat},${lng},16z`;
+
 export function TodayMode({
   activeStop: _activeStop,
   memoryBook,
+  todayTripDay,
   onSelectStop,
   onUpdateMemory
 }: {
   activeStop: TripStop;
   memoryBook: MemoryBook;
+  todayTripDay: number | null;
   onSelectStop: (stop: TripStop) => void;
   onUpdateMemory: (stopId: string, patch: Partial<Memory>) => void;
 }) {
@@ -237,7 +248,9 @@ export function TodayMode({
   const days = snapshot.days;
   const [clock, setClock] = useState(() => new Date());
   const [toast, setToast] = useState<{ id: number; text: string; type: "done" | "skip" } | null>(null);
+  const [notifyEnabled, setNotifyEnabled] = useState(false);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const firedNotifsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     const id = setInterval(() => setClock(new Date()), 30_000);
@@ -247,6 +260,28 @@ export function TodayMode({
   useEffect(() => () => {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.localStorage.getItem(notifyStorageKey) === "1" && typeof Notification !== "undefined" && Notification.permission === "granted") {
+      setNotifyEnabled(true);
+    }
+  }, []);
+
+  const toggleNotify = async () => {
+    if (notifyEnabled) {
+      setNotifyEnabled(false);
+      window.localStorage.setItem(notifyStorageKey, "0");
+      return;
+    }
+    if (typeof Notification === "undefined") return;
+    let perm = Notification.permission;
+    if (perm === "default") perm = await Notification.requestPermission();
+    if (perm === "granted") {
+      setNotifyEnabled(true);
+      window.localStorage.setItem(notifyStorageKey, "1");
+    }
+  };
 
   const flash = (text: string, type: "done" | "skip") => {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
@@ -327,11 +362,53 @@ export function TodayMode({
     .filter((s) => currentQuest && s.day === currentQuest.day)
     .reduce((sum, s) => sum + memOf(s.id).expenseAmount, 0);
 
+  // ── Schedule reminder: how soon is the next quest's scheduled time? ──
+  const nowMinutes = clock.getHours() * 60 + clock.getMinutes();
+  let reminder: { text: string; soon: boolean } | null = null;
+  if (nextQuest && todayTripDay === nextQuest.day) {
+    const sched = timeToMinutes(nextQuest.time);
+    if (sched !== null) {
+      const until = sched - nowMinutes;
+      if (until > 0 && until <= 45) {
+        reminder = { text: `⏰ 다음 일정 ${nextQuest.time} · ${nextQuest.title} — ${until}분 후`, soon: until <= 15 };
+      } else if (until <= 0 && until > -25) {
+        reminder = { text: `⏰ ${nextQuest.title}(${nextQuest.time}) 시간 됐어요`, soon: true };
+      }
+    }
+  }
+
+  // Fire a browser notification when an upcoming quest's scheduled time arrives (app must be open).
+  useEffect(() => {
+    if (!notifyEnabled || todayTripDay === null) return;
+    if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
+    const now = clock.getHours() * 60 + clock.getMinutes();
+    for (const s of stops) {
+      if (s.day !== todayTripDay) continue;
+      if (isCleared(s)) continue;
+      const sched = timeToMinutes(s.time);
+      if (sched === null) continue;
+      const diff = now - sched; // 0 .. 1 means it just arrived
+      if (diff >= 0 && diff <= 1 && !firedNotifsRef.current.has(s.id)) {
+        firedNotifsRef.current.add(s.id);
+        try {
+          new Notification("Y & S Taipei — 다음 일정", { body: `${s.time} · ${s.title}`, tag: `quest-${s.id}` });
+        } catch {
+          /* notifications may be blocked at the OS level */
+        }
+      }
+    }
+  }, [clock, notifyEnabled, todayTripDay, stops, memoryBook]);
+
   return (
     <div className="journey-stage">
       {toast && (
         <div key={toast.id} className={`quest-toast quest-toast--${toast.type}`} role="status">
           {toast.text}
+        </div>
+      )}
+      {reminder && (
+        <div className={reminder.soon ? "quest-reminder quest-reminder--soon" : "quest-reminder"}>
+          {reminder.text}
         </div>
       )}
       {/* ── Progress / timeline ── */}
@@ -475,15 +552,34 @@ export function TodayMode({
             </button>
           </div>
 
-          <a
-            className="quest-maps"
-            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentQuest.mapsQuery)}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <MapPin size={14} />
-            Google Maps에서 길찾기
-          </a>
+          <div className="quest-nav">
+            <a
+              className="quest-maps"
+              href={dirUrl(currentQuest.lat, currentQuest.lng)}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Navigation size={14} />
+              여기로 길찾기 (도보)
+            </a>
+            <div className="quest-near">
+              {[
+                { q: "화장실", label: "🚻 화장실" },
+                { q: "편의점", label: "🏪 편의점" },
+                { q: "ATM", label: "🏧 ATM" },
+                { q: "카페", label: "☕ 카페" }
+              ].map(({ q, label }) => (
+                <a
+                  key={q}
+                  href={nearUrl(q, currentQuest.lat, currentQuest.lng)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {label}
+                </a>
+              ))}
+            </div>
+          </div>
         </section>
       ) : (
         <section className="quest-card quest-card--done">
@@ -517,9 +613,20 @@ export function TodayMode({
               </button>
             )}
           </div>
-          <button className="quest-next__jump" onClick={() => onSelectStop(nextQuest)}>
-            미리 보기 →
-          </button>
+          <div className="quest-next__actions">
+            <a
+              className="quest-next__dir"
+              href={dirUrl(nextQuest.lat, nextQuest.lng)}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Navigation size={13} />
+              길찾기
+            </a>
+            <button className="quest-next__jump" onClick={() => onSelectStop(nextQuest)}>
+              미리 보기 →
+            </button>
+          </div>
         </section>
       )}
 
@@ -537,12 +644,29 @@ export function TodayMode({
         )}
       </section>
 
-      {/* ── GPS auto-advance ── */}
+      {/* ── GPS auto-advance + schedule notifications ── */}
       <GpsAutoStatus
         memoryBook={memoryBook}
         onUpdateMemory={onUpdateMemory}
         onSelectStop={onSelectStop}
       />
+      {typeof Notification !== "undefined" && (
+        <div className={notifyEnabled ? "quest-notify quest-notify--on" : "quest-notify"}>
+          <header>
+            {notifyEnabled ? <Bell size={16} /> : <BellOff size={16} />}
+            <strong>일정 알림</strong>
+            <label className="quest-notify__toggle">
+              <input type="checkbox" checked={notifyEnabled} onChange={() => void toggleNotify()} />
+              <span>{notifyEnabled ? "켜짐" : "꺼짐"}</span>
+            </label>
+          </header>
+          <p>
+            {notifyEnabled
+              ? "여행 당일, 스톱 예정 시각이 되면 알림이 떠요 (앱이 열려있을 때)."
+              : "켜면 스톱 예정 시각에 브라우저 알림. 브라우저/OS 알림 권한 필요."}
+          </p>
+        </div>
+      )}
 
       {/* ── Journey log ── */}
       <section className="journey-log">

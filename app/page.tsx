@@ -568,6 +568,7 @@ function HomeShell() {
         <TodayMode
           activeStop={activeStop}
           memoryBook={memoryBook}
+          todayTripDay={isoDayMap[todayIso()] ?? null}
           onSelectStop={handleSelectStop}
           onUpdateMemory={updateMemory}
         />
@@ -849,10 +850,10 @@ function PlanShell({
               <strong>{activeDayData.date}</strong>
             </div>
             <a
-              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activeStop.mapsQuery)}`}
+              href={`https://www.google.com/maps/dir/?api=1&destination=${activeStop.lat},${activeStop.lng}&travelmode=walking`}
               target="_blank"
               rel="noreferrer"
-              title="Google Maps에서 열기"
+              title="여기로 길찾기 (도보)"
             >
               <Navigation size={18} />
             </a>
