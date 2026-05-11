@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taipei Trip · 5.15 — 5.18</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=Inter:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a0e08;
+    --paper: #f5ede1;
+    --paper-warm: #ede0cb;
+    --crimson: #c8102e;
+    --crimson-deep: #8b0a1e;
+    --gold: #d4a437;
+    --jade: #2d6a4f;
+    --neon-pink: #ff2e7e;
+    --neon-cyan: #00e5ff;
+    --neon-yellow: #ffe23d;
+    --shadow: rgba(26, 14, 8, 0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    background: #0a0604;
+    font-family: 'Noto Sans KR', 'Inter', sans-serif;
+    color: var(--ink);
+    overflow: hidden;
+  }
+
+  /* === SLIDE FRAMEWORK === */
+  .deck {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+    overflow: hidden;
+    background: var(--paper);
+  }
+
+  .slide.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .slide-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 5vh 6vw;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* === NAV === */
+  .nav {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(26, 14, 8, 0.85);
+    color: var(--paper);
+    padding: 10px 18px;
+    border-radius: 100px;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+  }
+  .nav button {
+    background: none;
+    border: none;
+    color: var(--paper);
+    cursor: pointer;
+    font-size: 16px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    transition: background 0.2s;
+  }
+  .nav button:hover { background: rgba(255,255,255,0.15); }
+  .nav .counter { min-width: 60px; text-align: center; }
+
+  .progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--crimson), var(--gold));
+    z-index: 101;
+    transition: width 0.4s ease;
+  }
+
+  /* === SLIDE 1: COVER === */
+  .cover {
+    background:
+      radial-gradient(ellipse at 20% 100%, rgba(255, 46, 126, 0.45), transparent 50%),
+      radial-gradient(ellipse at 80% 0%, rgba(0, 229, 255, 0.25), transparent 50%),
+      linear-gradient(180deg, #1a0612 0%, #0a0408 100%);
+    color: var(--paper);
+  }
+  .cover .slide-inner {
+    justify-content: space-between;
+    padding: 6vh 6vw;
+  }
+  .cover-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    color: rgba(245, 237, 225, 0.6);
+    text-transform: uppercase;
+  }
+  .cover-top .ticket {
+    border: 1px solid rgba(245, 237, 225, 0.3);
+    padding: 10px 16px;
+    border-radius: 4px;
+  }
+  .cover-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+  }
+  .cover-han {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: clamp(80px, 18vw, 280px);
+    line-height: 0.85;
+    color: var(--paper);
+    letter-spacing: -0.02em;
+    position: relative;
+    z-index: 2;
+  }
+  .cover-han .accent {
+    color: var(--neon-pink);
+    text-shadow: 0 0 30px rgba(255, 46, 126, 0.6);
+  }
+  .cover-sub {
+    margin-top: 24px;
+    font-size: clamp(20px, 2.5vw, 36px);
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    color: rgba(245, 237, 225, 0.8);
+    text-transform: uppercase;
+  }
+  .cover-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .cover-bottom .info {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    color: rgba(245, 237, 225, 0.7);
+    line-height: 1.8;
+  }
+  .cover-bottom .info strong {
+    color: var(--neon-yellow);
+    font-weight: 500;
+  }
+  .cover-stamp {
+    width: 140px;
+    height: 140px;
+    border: 2px solid var(--neon-yellow);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    color: var(--neon-yellow);
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 700;
+    line-height: 1.2;
+    transform: rotate(-12deg);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+  }
+  .cover-stamp span {
+    display: block;
+    font-size: 28px;
+    letter-spacing: 0;
+    margin: 4px 0;
+  }
+  .lantern {
+    position: absolute;
+    width: 60px;
+    height: 80px;
+    background: radial-gradient(ellipse at center, var(--crimson) 0%, var(--crimson-deep) 70%);
+    border-radius: 50%;
+    box-shadow: 0 0 60px rgba(200, 16, 46, 0.6);
+    opacity: 0.7;
+  }
+  .lantern::before, .lantern::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gold);
+  }
+  .lantern::before { top: -8px; width: 30px; height: 6px; border-radius: 2px; }
+  .lantern::after { bottom: -12px; width: 2px; height: 12px; }
+  .lantern.l1 { top: 18%; right: 12%; }
+  .lantern.l2 { top: 32%; right: 22%; width: 40px; height: 55px; opacity: 0.5; }
+
+  /* === DAY SLIDES === */
+  .day .slide-inner {
+    background: var(--paper);
+    padding: 0;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+  }
+
+  .day-side {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 5vh 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+  .day-side::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at top right, rgba(255, 46, 126, 0.25), transparent 60%),
+      repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(255,255,255,0.02) 30px, rgba(255,255,255,0.02) 31px);
+    pointer-events: none;
+  }
+  .day-num {
+    position: relative;
+    z-index: 1;
+  }
+  .day-num .label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .day-num .num {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 140px;
+    font-weight: 900;
+    line-height: 0.9;
+    color: var(--paper);
+  }
+  .day-num .num small {
+    font-size: 36px;
+    color: var(--neon-yellow);
+    margin-left: 8px;
+    font-weight: 400;
+  }
+  .day-meta {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid rgba(245, 237, 225, 0.2);
+    padding-top: 24px;
+  }
+  .day-meta .date {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    color: var(--paper);
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+  .day-meta .theme {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--neon-yellow);
+    line-height: 1.4;
+  }
+  .day-meta .theme-en {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: rgba(245, 237, 225, 0.5);
+    letter-spacing: 0.15em;
+    margin-top: 6px;
+    text-transform: uppercase;
+  }
+  .day-han {
+    position: absolute;
+    bottom: -40px;
+    right: -20px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 220px;
+    font-weight: 900;
+    color: rgba(200, 16, 46, 0.18);
+    line-height: 0.85;
+    pointer-events: none;
+  }
+
+  .day-main {
+    padding: 5vh 5vw 5vh 4vw;
+    overflow-y: auto;
+    position: relative;
+  }
+  .day-main::-webkit-scrollbar { width: 6px; }
+  .day-main::-webkit-scrollbar-thumb { background: rgba(26, 14, 8, 0.2); border-radius: 3px; }
+
+  .timeline {
+    position: relative;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 80px;
+    top: 12px;
+    bottom: 12px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--crimson) 0%, var(--gold) 100%);
+    opacity: 0.3;
+  }
+
+  .tl-item {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 28px;
+    margin-bottom: 22px;
+    position: relative;
+  }
+  .tl-time {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    padding-top: 4px;
+    text-align: right;
+  }
+  .tl-time::after {
+    content: '';
+    position: absolute;
+    left: 76px;
+    top: 10px;
+    width: 10px;
+    height: 10px;
+    background: var(--paper);
+    border: 2px solid var(--crimson);
+    border-radius: 50%;
+    z-index: 1;
+  }
+
+  .tl-content {
+    padding-bottom: 4px;
+  }
+  .tl-tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .tag-food { background: var(--crimson); color: var(--paper); }
+  .tag-temple { background: var(--jade); color: var(--paper); }
+  .tag-beer { background: var(--neon-yellow); color: var(--ink); }
+  .tag-coffee { background: #6f4e37; color: var(--paper); }
+  .tag-whisky { background: var(--gold); color: var(--ink); }
+  .tag-move { background: var(--ink); color: var(--paper); }
+  .tag-shop { background: var(--neon-pink); color: var(--paper); }
+  .tag-relax { background: var(--neon-cyan); color: var(--ink); }
+
+  .tl-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+  .tl-title .han {
+    font-family: 'Noto Serif TC', serif;
+    color: var(--crimson);
+    font-weight: 700;
+    margin-left: 6px;
+    font-size: 15px;
+  }
+  .tl-desc {
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(26, 14, 8, 0.7);
+  }
+
+  .day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 32px;
+    padding-bottom: 18px;
+    border-bottom: 1px dashed rgba(26, 14, 8, 0.2);
+  }
+  .day-header h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .day-header h2 small {
+    display: block;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(26, 14, 8, 0.5);
+    margin-top: 8px;
+    letter-spacing: 0.05em;
+  }
+  .day-header .badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--paper);
+    background: var(--ink);
+    padding: 6px 12px;
+    border-radius: 100px;
+    letter-spacing: 0.1em;
+  }
+
+  /* === SLIDE: OVERVIEW === */
+  .overview {
+    background: var(--paper);
+  }
+  .overview .slide-inner {
+    padding: 8vh 8vw;
+    display: flex;
+    flex-direction: column;
+  }
+  .ov-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 60px;
+  }
+  .ov-head h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 64px;
+    font-weight: 900;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .ov-head h1 .red { color: var(--crimson); }
+  .ov-head .meta {
+    text-align: right;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: rgba(26, 14, 8, 0.6);
+    line-height: 1.8;
+    letter-spacing: 0.05em;
+  }
+
+  .ov-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    flex: 1;
+  }
+  .ov-card {
+    background: white;
+    padding: 28px 24px;
+    border-radius: 4px;
+    border-left: 3px solid var(--crimson);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 12px var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+  .ov-card:nth-child(1) { border-color: var(--neon-pink); }
+  .ov-card:nth-child(2) { border-color: var(--gold); }
+  .ov-card:nth-child(3) { border-color: var(--jade); }
+  .ov-card:nth-child(4) { border-color: var(--neon-cyan); }
+
+  .ov-card .day-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: rgba(26, 14, 8, 0.5);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .ov-card .day-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .ov-card .day-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--crimson);
+    margin-bottom: 20px;
+    letter-spacing: 0.05em;
+  }
+  .ov-card .day-desc {
+    font-size: 13px;
+    line-height: 1.6;
+    color: rgba(26, 14, 8, 0.75);
+    flex: 1;
+  }
+  .ov-card .day-keys {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px dashed rgba(26, 14, 8, 0.15);
+  }
+  .ov-card .day-keys span {
+    font-size: 11px;
+    padding: 3px 8px;
+    background: var(--paper-warm);
+    border-radius: 3px;
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .ov-footer {
+    margin-top: 40px;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: rgba(26, 14, 8, 0.5);
+    letter-spacing: 0.1em;
+    padding-top: 24px;
+    border-top: 1px solid rgba(26, 14, 8, 0.1);
+  }
+
+  /* === SLIDE: SHOPPING === */
+  .shopping {
+    background:
+      radial-gradient(ellipse at top right, rgba(255, 226, 61, 0.15), transparent 60%),
+      var(--paper);
+  }
+  .shopping .slide-inner {
+    padding: 8vh 8vw;
+  }
+  .shop-head {
+    margin-bottom: 50px;
+  }
+  .shop-head .label {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--crimson);
+    margin-bottom: 12px;
+  }
+  .shop-head h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 72px;
+    font-weight: 900;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .shop-head h1 .accent { color: var(--gold); }
+  .shop-head .sub {
+    margin-top: 12px;
+    font-size: 16px;
+    color: rgba(26, 14, 8, 0.6);
+  }
+
+  .shop-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+  .shop-section h3 {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--ink);
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .shop-section h3 .en {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(26, 14, 8, 0.5);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .shop-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .shop-list li {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    gap: 16px;
+    align-items: center;
+    padding: 14px 18px;
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 1px 6px var(--shadow);
+  }
+  .shop-list .ck {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--crimson);
+    border-radius: 4px;
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    color: var(--crimson);
+  }
+  .shop-list .item {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .shop-list .item .han {
+    font-family: 'Noto Serif TC', serif;
+    color: var(--crimson);
+    margin-left: 8px;
+    font-size: 14px;
+  }
+  .shop-list .where {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    background: var(--paper-warm);
+    border-radius: 3px;
+    color: rgba(26, 14, 8, 0.7);
+    letter-spacing: 0.05em;
+  }
+
+  /* === SLIDE: TIPS === */
+  .tips {
+    background: linear-gradient(135deg, #1a0612 0%, #2a0a18 50%, #0a0408 100%);
+    color: var(--paper);
+  }
+  .tips .slide-inner {
+    padding: 8vh 8vw;
+    display: flex;
+    flex-direction: column;
+  }
+  .tips-head {
+    margin-bottom: 50px;
+  }
+  .tips-head h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 72px;
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--neon-pink), var(--neon-yellow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .tips-head .sub {
+    margin-top: 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    color: rgba(245, 237, 225, 0.7);
+    letter-spacing: 0.1em;
+  }
+
+  .tips-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 28px;
+    flex: 1;
+  }
+  .tip-card {
+    background: rgba(245, 237, 225, 0.05);
+    border: 1px solid rgba(245, 237, 225, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 32px 28px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .tip-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--neon-pink);
+  }
+  .tip-card .num {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 60px;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--neon-yellow);
+    margin-bottom: 16px;
+  }
+  .tip-card h4 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: var(--paper);
+    line-height: 1.3;
+  }
+  .tip-card p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: rgba(245, 237, 225, 0.75);
+    flex: 1;
+  }
+  .tip-card .quote {
+    margin-top: 20px;
+    padding: 12px 16px;
+    background: rgba(255, 46, 126, 0.1);
+    border-left: 2px solid var(--neon-pink);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--neon-yellow);
+    border-radius: 0 4px 4px 0;
+  }
+
+  /* === SLIDE: ENDING === */
+  .ending {
+    background:
+      radial-gradient(ellipse at center, rgba(255, 46, 126, 0.3), transparent 60%),
+      linear-gradient(180deg, #0a0408 0%, #1a0612 100%);
+    color: var(--paper);
+    display: grid;
+    place-items: center;
+    text-align: center;
+  }
+  .ending .slide-inner {
+    padding: 0;
+    display: grid;
+    place-items: center;
+  }
+  .ending-content {
+    text-align: center;
+    max-width: 800px;
+  }
+  .ending-han {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(80px, 12vw, 180px);
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: 0.05em;
+    background: linear-gradient(135deg, var(--neon-pink) 0%, var(--neon-yellow) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .ending-sub {
+    margin-top: 24px;
+    font-size: clamp(18px, 2vw, 28px);
+    font-weight: 300;
+    letter-spacing: 0.4em;
+    color: rgba(245, 237, 225, 0.9);
+    text-transform: uppercase;
+  }
+  .ending-msg {
+    margin-top: 60px;
+    padding: 24px 36px;
+    border: 1px solid rgba(245, 237, 225, 0.2);
+    border-radius: 100px;
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    color: var(--neon-yellow);
+  }
+  .ending-date {
+    margin-top: 40px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: rgba(245, 237, 225, 0.5);
+    letter-spacing: 0.2em;
+  }
+
+  /* helpers */
+  .hint {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    pointer-events: none;
+    z-index: 99;
+  }
+
+  @media (max-width: 900px) {
+    .day .slide-inner { grid-template-columns: 1fr; }
+    .day-side { padding: 24px; }
+    .day-num .num { font-size: 80px; }
+    .day-han { display: none; }
+    .ov-grid { grid-template-columns: 1fr 1fr; }
+    .shop-grid, .tips-grid { grid-template-columns: 1fr; }
+    .timeline::before { left: 60px; }
+    .tl-item { grid-template-columns: 60px 1fr; gap: 16px; }
+    .tl-time::after { left: 56px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="deck" id="deck">
+
+  <!-- ============ SLIDE 1: COVER ============ -->
+  <section class="slide cover active">
+    <div class="lantern l1"></div>
+    <div class="lantern l2"></div>
+    <div class="slide-inner">
+      <div class="cover-top">
+        <span>Boarding Pass · TPE</span>
+        <span class="ticket">Gate 7 · Seat 14A</span>
+      </div>
+      <div class="cover-center">
+        <h1 class="cover-han">台<span class="accent">北</span><br>之旅</h1>
+        <p class="cover-sub">Taipei · 4 Days 3 Nights</p>
+      </div>
+      <div class="cover-bottom">
+        <div class="info">
+          <strong>2026.05.15 — 05.18</strong><br>
+          ICN ✈ TPE · Spring Trip<br>
+          For my favorite travel buddy ♡
+        </div>
+        <div class="cover-stamp">
+          台灣<span>4D3N</span>'26
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 2: OVERVIEW ============ -->
+  <section class="slide overview">
+    <div class="slide-inner">
+      <div class="ov-head">
+        <h1>4일간의 <span class="red">미식 산책</span><br>路線概覽</h1>
+        <div class="meta">
+          MAY 15 — MAY 18 · 2026<br>
+          TAIPEI · YILAN<br>
+          BEER · WHISKY · STREET FOOD
+        </div>
+      </div>
+
+      <div class="ov-grid">
+        <div class="ov-card">
+          <div class="day-tag">DAY 01 · FRI</div>
+          <div class="day-title">시먼딩</div>
+          <div class="day-date">05.15 · 西門町</div>
+          <div class="day-desc">도착하자마자 시먼딩 길거리 음식 폭격. 용산사 야경, 크래프트 맥주, 영화관 컨셉 위스키 바까지 풀코스.</div>
+          <div class="day-keys">
+            <span>지파이</span><span>탭맥주</span><span>위스키 바</span>
+          </div>
+        </div>
+        <div class="ov-card">
+          <div class="day-tag">DAY 02 · SAT</div>
+          <div class="day-title">이란</div>
+          <div class="day-date">05.16 · 宜蘭</div>
+          <div class="day-desc">위스키 성지 카발란 양조장 투어. 쑤아오 냉천에서 짜릿한 휴식, 닝샤 야시장으로 마무리.</div>
+          <div class="day-keys">
+            <span>카발란</span><span>냉천</span><span>야시장</span>
+          </div>
+        </div>
+        <div class="ov-card">
+          <div class="day-tag">DAY 03 · SUN</div>
+          <div class="day-title">융캉제</div>
+          <div class="day-date">05.17 · 永康街</div>
+          <div class="day-desc">중정기념당 → 딘타이펑 본점 → 챔피언 카페 → 수제맥주 → 위스키 칵테일까지 완벽한 동선.</div>
+          <div class="day-keys">
+            <span>딘타이펑</span><span>Simple Kaffa</span><span>Bar Mood</span>
+          </div>
+        </div>
+        <div class="ov-card">
+          <div class="day-tag">DAY 04 · MON</div>
+          <div class="day-title">출국</div>
+          <div class="day-date">05.18 · 出國</div>
+          <div class="day-desc">우육면으로 해장. 시먼딩 막판 쇼핑, 공항 면세점 카발란 샵 체크. 14시 비행기.</div>
+          <div class="day-keys">
+            <span>우육면</span><span>면세점</span><span>14:00 출발</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ov-footer">
+        <span>ITINERARY · 旅行日程</span>
+        <span>03 / 09</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 3: DAY 1 ============ -->
+  <section class="slide day">
+    <div class="slide-inner">
+      <div class="day-side">
+        <div class="day-num">
+          <div class="label">First Day</div>
+          <div class="num">01<small>/04</small></div>
+        </div>
+        <div class="day-meta">
+          <div class="date">05 · 15 FRI</div>
+          <div class="theme">시먼딩 길거리 음식<br>& 크래프트 맥주</div>
+          <div class="theme-en">Ximending Night</div>
+        </div>
+        <div class="day-han">西門</div>
+      </div>
+
+      <div class="day-main">
+        <div class="day-header">
+          <h2>Ximending<small>도착하자마자 본격 먹부림 시작</small></h2>
+          <span class="badge">DAY 1</span>
+        </div>
+
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-time">16:00</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-move">CHECK-IN</span>
+              <div class="tl-title">시먼딩 도착 및 체크인</div>
+              <div class="tl-desc">짐 던지고 바로 거리로 출동. 시먼딩의 네온이 켜질 무렵.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">17:00</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-food">EAT</span>
+              <div class="tl-title">핫스타 지파이<span class="han">豪大大雞排</span></div>
+              <div class="tl-desc">얼굴만한 크기의 지파이 하나 사서 둘이 나눠 먹기. 시먼딩의 시그니처.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">17:40</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-food">EAT</span>
+              <div class="tl-title">아종면선 곱창국수<span class="han">阿宗麵線</span></div>
+              <div class="tl-desc">서서 먹는 재미가 있는 시먼딩 필수 코스. 진한 곱창 국물.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">18:30</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-temple">TEMPLE</span>
+              <div class="tl-title">용산사<span class="han">龍山寺</span></div>
+              <div class="tl-desc">시먼딩에서 지하철 한 정거장 또는 도보 15분. 화려한 야경 보며 소원 빌기.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">20:00</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-beer">BEER</span>
+              <div class="tl-title">Taihu Driftwood<span class="han">臺虎西門</span></div>
+              <div class="tl-desc">유목 인테리어에서 즐기는 신선한 탭 맥주. 근처 1956년 노포 Fong Da Coffee 호두과자도 추천.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">22:00</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-whisky">WHISKY</span>
+              <div class="tl-title">Hanko 60</div>
+              <div class="tl-desc">시먼딩 스피크이지 바. 영화관 컨셉의 공간에서 위스키 베이스 창작 칵테일로 첫날 마무리.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 4: DAY 2 ============ -->
+  <section class="slide day">
+    <div class="slide-inner">
+      <div class="day-side">
+        <div class="day-num">
+          <div class="label">Second Day</div>
+          <div class="num">02<small>/04</small></div>
+        </div>
+        <div class="day-meta">
+          <div class="date">05 · 16 SAT</div>
+          <div class="theme">위스키 성지 투어<br>& 쑤아오 냉천</div>
+          <div class="theme-en">Yilan · Kavalan</div>
+        </div>
+        <div class="day-han">宜蘭</div>
+      </div>
+
+      <div class="day-main">
+        <div class="day-header">
+          <h2>Yilan<small>이란으로 떠나는 위스키 순례</small></h2>
+          <span class="badge">DAY 2</span>
+        </div>
+
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-time">08:00</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-coffee">BREAKFAST</span>
+              <div class="tl-title">호텔 조식 1회차</div>
+              <div class="tl-desc">든든하게 먹고 출발 준비.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">09:30</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-move">TRANSIT</span>
+              <div class="tl-title">이란(Yilan) 이동</div>
+              <div class="tl-desc">버스 또는 기차 이용. 약 1시간 30분 소요.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">11:30</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-food">BRUNCH</span>
+              <div class="tl-title">이란 명물 니우셔빙 & 육갱<span class="han">牛舌餅</span></div>
+              <div class="tl-desc">얇고 바삭한 소혀 모양 과자와 마늘 고기 국수.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">14:00</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-whisky">WHISKY</span>
+              <div class="tl-title">카발란 양조장 투어<span class="han">噶瑪蘭</span></div>
+              <div class="tl-desc">예약 완료. 시음 코너에서 '솔리스트' 라인업 집중 공략. 오늘의 메인 이벤트.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">16:30</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-relax">RELAX</span>
+              <div class="tl-title">쑤아오 냉천<span class="han">蘇澳冷泉</span></div>
+              <div class="tl-desc">탄산 기포로 온몸을 짜릿하게 식혀주기. 위스키로 데워진 몸을 식히기 딱 좋은 타이밍.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">19:30</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-food">NIGHT MARKET</span>
+              <div class="tl-title">닝샤 야시장<span class="han">寧夏夜市</span></div>
+              <div class="tl-desc">타이베이 복귀 후 지파이 투어 2탄. 굴전, 토란 튀김 같은 미식 위주 길거리 음식 섭렵.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">22:00</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-beer">BEER</span>
+              <div class="tl-title">Mikkeller Taipei</div>
+              <div class="tl-desc">다다오청의 오래된 건물에서 즐기는 미켈러 맥주. 분위기가 진짜 좋은 곳.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 5: DAY 3 ============ -->
+  <section class="slide day">
+    <div class="slide-inner">
+      <div class="day-side">
+        <div class="day-num">
+          <div class="label">Third Day</div>
+          <div class="num">03<small>/04</small></div>
+        </div>
+        <div class="day-meta">
+          <div class="date">05 · 17 SUN</div>
+          <div class="theme">융캉제 정복<br>커피·미식·맥주·위스키</div>
+          <div class="theme-en">Yongkang Street</div>
+        </div>
+        <div class="day-han">永康</div>
+      </div>
+
+      <div class="day-main">
+        <div class="day-header">
+          <h2>Yongkang<small>하루 종일 한 동네에서 다 즐기기</small></h2>
+          <span class="badge">DAY 3</span>
+        </div>
+
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-time">09:00</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-coffee">BREAKFAST</span>
+              <div class="tl-title">호텔 조식 2회차</div>
+              <div class="tl-desc">든든하게 채우고 융캉제로.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">10:30</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-temple">SIGHTSEEING</span>
+              <div class="tl-title">중정기념당<span class="han">中正紀念堂</span></div>
+              <div class="tl-desc">융캉제 가기 전 들러서 웅장한 근위병 교대식 구경.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">12:00</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-food">EAT</span>
+              <div class="tl-title">딘타이펑 본점<span class="han">鼎泰豐</span></div>
+              <div class="tl-desc">미리 산 티켓으로 점심. 본점에서 먹는 샤오롱바오는 진리.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">14:00</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-coffee">COFFEE</span>
+              <div class="tl-title">Simple Kaffa<span class="han">興波咖啡</span></div>
+              <div class="tl-desc">세계 챔피언 바리스타가 운영하는 곳. 또는 융캉제 골목의 고즈넉한 카페들 탐방.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">16:00</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-beer">DAY BEER</span>
+              <div class="tl-title">Zhang Men Brewing<span class="han">掌門精釀</span></div>
+              <div class="tl-desc">융캉제 본점에서 다양한 수제 맥주 샘플러 즐기기. 낮맥의 정수.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">18:00</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-food">SNACK</span>
+              <div class="tl-title">융캉제 총좌빙<span class="han">蔥抓餅</span></div>
+              <div class="tl-desc">딘타이펑 골목 줄 서서 먹는 대만식 호떡. 치즈/계란 추가 추천.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">20:00</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-whisky">COCKTAIL BAR</span>
+              <div class="tl-title">Bar Mood Taipei</div>
+              <div class="tl-desc">정교한 위스키 칵테일과 프리미엄 싱글몰트. 아시아 베스트 바 단골.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">22:30</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-whisky">FINAL BAR</span>
+              <div class="tl-title">The Public House</div>
+              <div class="tl-desc">마지막 밤을 장식할 세련된 바 문화 체험. 둘이서 분위기 잡고 한 잔.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 6: DAY 4 ============ -->
+  <section class="slide day">
+    <div class="slide-inner">
+      <div class="day-side">
+        <div class="day-num">
+          <div class="label">Last Day</div>
+          <div class="num">04<small>/04</small></div>
+        </div>
+        <div class="day-meta">
+          <div class="date">05 · 18 MON</div>
+          <div class="theme">마지막 해장<br>& 출국</div>
+          <div class="theme-en">Departure</div>
+        </div>
+        <div class="day-han">回家</div>
+      </div>
+
+      <div class="day-main">
+        <div class="day-header">
+          <h2>Goodbye<small>14시 비행기 — 11시까지는 시먼딩에서 출발</small></h2>
+          <span class="badge">DAY 4</span>
+        </div>
+
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-time">09:30</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-food">BRUNCH</span>
+              <div class="tl-title">니우뎬 우육면<span class="han">牛店</span></div>
+              <div class="tl-desc">시먼딩에서 마지막 만찬. 진한 국물로 여행 마무리하면서 해장도 동시에.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">10:30</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-shop">SHOPPING</span>
+              <div class="tl-title">시먼딩 막판 쇼핑</div>
+              <div class="tl-desc">카르푸에서 미처 못 산 맥주/위스키 안주 쇼핑. 왕자치즈감자 같은 길거리 간식 마지막으로 하나 더.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">11:00</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-move">DEPART</span>
+              <div class="tl-title">공항철도 탑승</div>
+              <div class="tl-desc">시먼딩 → 타이베이 메인역(공항철도 MRT). 11시 출발이 안전.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">12:00</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-shop">DUTY FREE</span>
+              <div class="tl-title">공항 도착 & 면세점</div>
+              <div class="tl-desc">수속 후 공항 면세점 카발란 샵 구경. 솔리스트 추가 픽업 찬스.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-time">14:00</div>
+            <div class="tl-content">
+              <span class="tl-tag tag-move">FLIGHT</span>
+              <div class="tl-title">출국 ✈ 인천</div>
+              <div class="tl-desc">대만이여 또 보자. 다음엔 타이중도 가보자.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 7: SHOPPING ============ -->
+  <section class="slide shopping">
+    <div class="slide-inner">
+      <div class="shop-head">
+        <div class="label">★ MUST-BUY LIST</div>
+        <h1>필수 <span class="accent">쇼핑</span> 리스트</h1>
+        <p class="sub">대만에서 빈손으로 돌아오면 무조건 후회하는 것들</p>
+      </div>
+
+      <div class="shop-grid">
+        <div class="shop-section">
+          <h3>술 <span class="en">Liquor / 酒類</span></h3>
+          <ul class="shop-list">
+            <li>
+              <span class="ck">✓</span>
+              <span class="item">카발란 솔리스트<span class="han">噶瑪蘭 Solist</span></span>
+              <span class="where">양조장 / 면세점</span>
+            </li>
+            <li>
+              <span class="ck">✓</span>
+              <span class="item">금문고량주<span class="han">金門高粱酒</span></span>
+              <span class="where">카르푸</span>
+            </li>
+            <li>
+              <span class="ck">✓</span>
+              <span class="item">대만 크래프트 맥주 모음</span>
+              <span class="where">편의점</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="shop-section">
+          <h3>간식 <span class="en">Snacks / 零食</span></h3>
+          <ul class="shop-list">
+            <li>
+              <span class="ck">✓</span>
+              <span class="item">누가 크래커<span class="han">牛軋餅</span></span>
+              <span class="where">융캉제</span>
+            </li>
+            <li>
+              <span class="ck">✓</span>
+              <span class="item">펑리수<span class="han">鳳梨酥</span></span>
+              <span class="where">곳곳</span>
+            </li>
+            <li>
+              <span class="ck">✓</span>
+              <span class="item">망고젤리 (안주용)</span>
+              <span class="where">카르푸</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 8: TIPS ============ -->
+  <section class="slide tips">
+    <div class="slide-inner">
+      <div class="tips-head">
+        <h1>여행 꿀팁</h1>
+        <p class="sub">// SURVIVAL GUIDE FOR TAIPEI</p>
+      </div>
+
+      <div class="tips-grid">
+        <div class="tip-card">
+          <div class="num">01</div>
+          <h4>지파이는 보이면 바로!</h4>
+          <p>가게마다 파우더 맛이 달라서 비교하는 재미가 있어. 한 곳만 가지 말고 동선 따라 여러 군데 도전.</p>
+          <div class="quote">"보이면 일단 사 먹기"</div>
+        </div>
+
+        <div class="tip-card">
+          <div class="num">02</div>
+          <h4>출국일 시간 엄수</h4>
+          <p>월요일 14시 비행기. 11시에는 무조건 시먼딩에서 공항철도 타러 출발해야 안전. 면세점 시간도 챙기자.</p>
+          <div class="quote">"11:00 NO EXCEPTION"</div>
+        </div>
+
+        <div class="tip-card">
+          <div class="num">03</div>
+          <h4>토요일 일찍 시작</h4>
+          <p>이란 이동 시간 + 카발란 투어 + 냉천까지 일정 빡빡함. 아침 일찍 서둘러야 야시장도 여유롭게.</p>
+          <div class="quote">"일찍 일어나는 자가 위스키를"</div>
+        </div>
+
+        <div class="tip-card">
+          <div class="num">04</div>
+          <h4>융캉제는 동선이 핵심</h4>
+          <p>커피(Simple Kaffa) → 맥주(Zhang Men) → 위스키(Bar Mood)를 한 동네에서 다 해결. 도보 이동만으로 OK.</p>
+          <div class="quote">"한 동네에서 다 즐기기"</div>
+        </div>
+
+        <div class="tip-card">
+          <div class="num">05</div>
+          <h4>차+위스키 칵테일</h4>
+          <p>대만 바텐더들은 차나 커피를 위스키에 접목하는 걸 좋아함. 메뉴에 없어도 취향 말하면 창작 칵테일 가능.</p>
+          <div class="quote">"Tell them your taste"</div>
+        </div>
+
+        <div class="tip-card">
+          <div class="num">06</div>
+          <h4>현금 챙기기</h4>
+          <p>야시장과 노포는 카드 안 받는 곳 많음. 대만달러(NTD) 충분히 환전. 편의점에서 잔돈 만들기 좋아.</p>
+          <div class="quote">"CASH IS KING"</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 9: ENDING ============ -->
+  <section class="slide ending">
+    <div class="lantern l1" style="top: 15%; left: 10%;"></div>
+    <div class="lantern l2" style="bottom: 20%; right: 15%;"></div>
+    <div class="slide-inner">
+      <div class="ending-content">
+        <h1 class="ending-han">出發吧!</h1>
+        <p class="ending-sub">Let's Go to Taipei</p>
+        <div class="ending-msg">우리 둘이 만드는 가장 맛있는 4일</div>
+        <div class="ending-date">2026 · 05 · 15 — 05 · 18</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="hint">← → 또는 SPACE로 이동</div>
+
+<div class="nav">
+  <button id="prev" aria-label="Previous">‹</button>
+  <span class="counter"><span id="cur">1</span> / <span id="total">9</span></span>
+  <button id="next" aria-label="Next">›</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  document.getElementById('total').textContent = total;
+
+  function show(i) {
+    current = (i + total) % total;
+    slides.forEach((s, idx) => s.classList.toggle('active', idx === current));
+    document.getElementById('cur').textContent = current + 1;
+    document.getElementById('progress').style.width = ((current + 1) / total * 100) + '%';
+  }
+
+  document.getElementById('next').addEventListener('click', () => show(current + 1));
+  document.getElementById('prev').addEventListener('click', () => show(current - 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); show(current + 1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); show(current - 1); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(total - 1);
+  });
+
+  // Touch swipe
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', (e) => {
+    const diff = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(diff) > 50) show(current + (diff < 0 ? 1 : -1));
+  });
+
+  show(0);
+
+  // Hide hint after first interaction
+  let hintHidden = false;
+  function hideHint() {
+    if (hintHidden) return;
+    hintHidden = true;
+    const hint = document.querySelector('.hint');
+    hint.style.transition = 'opacity 0.5s';
+    hint.style.opacity = '0';
+    setTimeout(() => hint.remove(), 500);
+  }
+  document.addEventListener('keydown', hideHint, { once: true });
+  document.addEventListener('click', hideHint, { once: true });
+</script>
+
+</body>
+</html>
