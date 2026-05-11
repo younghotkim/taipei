@@ -164,7 +164,20 @@ alter table public.trip_expenses enable row level security;
 -- writes go through the Next.js server route with the service-role key
 
 -- ---------------------------------------------------------------------------
--- 7. Storage bucket — 사진 업로드 (PhotoUploader 컴포넌트가 사용)
+-- 7. trip_bingo — 여행 빙고 보드 (완료한 칸 인덱스 목록)
+-- ---------------------------------------------------------------------------
+
+create table if not exists public.trip_bingo (
+  trip_id text not null primary key,
+  done integer[] not null default '{}',
+  updated_at timestamptz not null default now()
+);
+
+alter table public.trip_bingo enable row level security;
+-- writes go through the Next.js server route with the service-role key
+
+-- ---------------------------------------------------------------------------
+-- 8. Storage bucket — 사진 업로드 (PhotoUploader 컴포넌트가 사용)
 -- ---------------------------------------------------------------------------
 
 insert into storage.buckets (id, name, public)

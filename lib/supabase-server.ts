@@ -32,6 +32,12 @@ export type TripExpenseRow = {
   at: string;
 };
 
+export type TripBingoRow = {
+  trip_id: string;
+  done: number[];
+  updated_at?: string;
+};
+
 export const photoBucket = process.env.SUPABASE_PHOTO_BUCKET ?? "trip-photos";
 
 const supabaseUrl = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;

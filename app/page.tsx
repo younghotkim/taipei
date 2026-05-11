@@ -13,6 +13,7 @@ import {
   Download,
   ExternalLink,
   FileText,
+  Grid3x3,
   Import,
   ListChecks,
   Loader2,
@@ -33,6 +34,7 @@ import { MapView } from "./components/MapView";
 import { TodayMode } from "./components/TodayMode";
 import { RecapMode } from "./components/RecapMode";
 import { LedgerMode } from "./components/LedgerMode";
+import { BingoMode } from "./components/BingoMode";
 import { categoryIcon } from "./components/icons";
 import { DayWeatherBadge } from "./components/WeatherBar";
 import { PhotoUploader } from "./components/PhotoUploader";
@@ -50,6 +52,7 @@ import {
 } from "@/lib/trip-data";
 import { getPlan, newStopId, stopToRow, type StopRow } from "@/lib/itinerary";
 import { useExpenses } from "@/lib/use-expenses";
+import { useBingo } from "@/lib/use-bingo";
 import {
   authorLabels,
   combinedRating,
@@ -64,7 +67,7 @@ import {
   type MemoryBook
 } from "@/lib/memory-types";
 
-type ShellMode = "plan" | "today" | "memories" | "ledger" | "recap";
+type ShellMode = "plan" | "today" | "bingo" | "memories" | "ledger" | "recap";
 type PlanView = "list" | "map" | "edit";
 type MemoryView = "list" | "edit";
 type SyncStatus = "local" | "loading" | "synced" | "saving" | "offline" | "error";
@@ -128,6 +131,7 @@ function isShellMode(value: string | null): value is ShellMode {
   return (
     value === "plan" ||
     value === "today" ||
+    value === "bingo" ||
     value === "memories" ||
     value === "ledger" ||
     value === "recap"
@@ -157,16 +161,18 @@ const combinedSyncMeta: Record<CombinedSync, { label: string }> = {
 const modeLabels: Record<ShellMode, string> = {
   plan: "일정",
   today: "오늘",
-  memories: "기록",
+  bingo: "빙고",
   ledger: "가계부",
+  memories: "기록",
   recap: "회고"
 };
 
 const modeIcons: Record<ShellMode, React.ReactNode> = {
   plan: <MapIcon size={16} />,
   today: <Sun size={16} />,
-  memories: <FileText size={16} />,
+  bingo: <Grid3x3 size={16} />,
   ledger: <Wallet size={16} />,
+  memories: <FileText size={16} />,
   recap: <BarChart3 size={16} />
 };
 
@@ -192,6 +198,7 @@ function HomeShell() {
   const tripStops = snapshot.stops;
   const fallbackStopId = tripStops[0]?.id ?? "";
   const expenses = useExpenses();
+  const bingo = useBingo();
 
   const [mode, setMode] = useState<ShellMode>("plan");
   const [planView, setPlanView] = useState<PlanView>("list");
@@ -302,7 +309,8 @@ function HomeShell() {
     void loadRemoteMemories();
     void itinerary.refresh();
     void expenses.refresh();
-  }, [loadRemoteMemories, itinerary, expenses]);
+    void bingo.refresh();
+  }, [loadRemoteMemories, itinerary, expenses, bingo]);
 
   const selectDay = (day: number) => {
     setActiveDay(day);
@@ -611,6 +619,8 @@ function HomeShell() {
         />
       )}
 
+      {mode === "bingo" && <BingoMode done={bingo.done} onToggle={bingo.toggle} />}
+
       {mode === "ledger" && (
         <LedgerMode
           memoryBook={memoryBook}
@@ -630,6 +640,7 @@ function HomeShell() {
         <RecapMode
           memoryBook={memoryBook}
           ledgerEntries={expenses.entries}
+          bingoDone={bingo.done}
           onExport={exportMemories}
           onSelectStop={(stop) => {
             handleSelectStop(stop);
