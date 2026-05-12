@@ -64,7 +64,7 @@ export const tripDays: TripDay[] = [
     date: "5/16 토",
     title: "이란 카발란 + 쑤아오 냉천",
     mood: "느긋한 조식 → 기차로 이란 데이트립",
-    summary: "호텔 조식 → 타이베이역에서 기차로 이란 → 로컬 점심 → 카발란 양조장 → 쑤아오 냉천 → 닝샤 야시장 → 호텔 복귀."
+    summary: "호텔 조식 → 기차로 이란 → 로컬 점심 → 카발란 양조장 → 쑤아오 냉천 → 기차로 타이베이 복귀 → 닝샤 야시장 → 호텔."
   },
   {
     day: 3,
@@ -357,6 +357,25 @@ export const tripStops: TripStop[] = [
     highlights: ["냉천", "탄산 기포", "양조장 후 휴식"],
     prompt: "물에 들어간 첫 10초의 표정을 사진으로 남기기.",
     mapsQuery: "Suao Cold Spring"
+  },
+  {
+    id: "yilan-return",
+    day: 2,
+    date: "5/16 토",
+    time: "17:45",
+    title: "쑤아오/이란 → 타이베이 (기차)",
+    subtitle: "蘇澳新站(또는 羅東) → 台北車站 · ~1시간 30분",
+    nameZh: "蘇澳新站 / 羅東 → 台北車站 (台鐵)",
+    mrt: "쑤아오신역(蘇澳新站) → 타이베이역(台北車站)",
+    phrase: "兩張到台北的火車票，謝謝。",
+    phrasePron: "liǎng zhāng dào Táiběi de huǒchēpiào, xièxie",
+    phraseHint: "타이베이행 기차표 두 장이요",
+    category: "transit",
+    lat: 24.6014,
+    lng: 121.847,
+    highlights: ["蘇澳新站 또는 羅東에서 台北 방향 자강/거광호", "냉천 → 역까지 도보/택시", "닝샤 야시장 시간 맞춰 예매 확인 (귀로도 미리 예약)"],
+    prompt: "돌아오는 기차에서 오늘(카발란·냉천) 베스트 순간 한 줄.",
+    mapsQuery: "Su-ao New Station Taiwan"
   },
   {
     id: "ningxia",
@@ -686,6 +705,12 @@ export const stopPlanMeta: Record<string, StopPlanMeta> = {
     durationMinutes: 90,
     alternatives: ["이란 시내 카페 휴식", "타이베이 조기 복귀"],
     flexTip: "비/피로/교통 지연이 있으면 가장 먼저 줄일 수 있는 일정."
+  },
+  "yilan-return": {
+    priority: "must",
+    durationMinutes: 110,
+    alternatives: ["羅東역에서 탑승", "버스로 복귀 (시간 더 걸림)"],
+    flexTip: "냉천을 줄이더라도 닝샤 야시장 시간에 맞춰 기차편을 먼저 정하기. 귀로 표도 미리 예매."
   },
   ningxia: {
     priority: "must",
