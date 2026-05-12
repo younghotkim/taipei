@@ -220,23 +220,23 @@ export const tripStops: TripStop[] = [
     mapsQuery: "Taihu Driftwood Ximending"
   },
   {
-    id: "fong-da-coffee",
+    id: "foot-spa-101",
     day: 1,
     date: "5/15 금",
-    time: "20:40",
-    title: "Fong Da Coffee",
-    subtitle: "1956년부터 운영한 노포 커피",
-    nameZh: "蜂大咖啡",
+    time: "20:50",
+    title: "발마사지 — 足spa101",
+    subtitle: "탭 맥주 후 발 풀고 바 가기",
+    nameZh: "足spa101 西門町按摩",
     mrt: "시먼역(西門站) 6번 출구",
-    phrase: "一杯熱拿鐵和核桃酥。",
-    phrasePron: "yī bēi rè nátiě hé hétáosū",
-    phraseHint: "따뜻한 라떼 한 잔이랑 호두과자요",
-    category: "coffee",
-    lat: 25.0434,
-    lng: 121.5076,
-    highlights: ["대만식 드립", "호두 과자", "노포 분위기"],
-    prompt: "커피 향, 디저트, 가게 분위기 중 제일 좋았던 것 체크.",
-    mapsQuery: "Fong Da Coffee Taipei"
+    phrase: "兩位，腳底按摩，謝謝。",
+    phrasePron: "liǎng wèi, jiǎodǐ ànmó, xièxie",
+    phraseHint: "두 명, 발마사지요",
+    category: "sight",
+    lat: 25.0438,
+    lng: 121.5072,
+    highlights: ["발마사지 40분 / 60분", "탭 맥주 → 발 풀고 → 바", "팁 부담 없음 (대만)"],
+    prompt: "발마사지 만족도랑 끝나고 발이 얼마나 가벼워졌는지 한 줄.",
+    mapsQuery: "足spa101 西門町 Taipei foot massage"
   },
   {
     id: "hanko-60",
@@ -607,11 +607,11 @@ export const stopPlanMeta: Record<string, StopPlanMeta> = {
     alternatives: ["Ximen Beer Bar", "편의점 맥주로 호텔 휴식"],
     flexTip: "첫날 체력이 떨어지면 Hanko 60과 둘 중 하나만 선택."
   },
-  "fong-da-coffee": {
-    priority: "backup",
-    durationMinutes: 30,
-    alternatives: ["호텔 근처 카페", "다음날 아침 커피로 이동"],
-    flexTip: "영업/대기 상황에 따라 짧은 디저트 코스로만 사용."
+  "foot-spa-101": {
+    priority: "optional",
+    durationMinutes: 50,
+    alternatives: ["다른 西門町 발마사지샵", "호텔에서 휴식"],
+    flexTip: "줄이 길면 바(Hanko 60) 먼저 가고 마사지는 다음 날 오후로."
   },
   "hanko-60": {
     priority: "optional",
@@ -670,7 +670,7 @@ export const stopPlanMeta: Record<string, StopPlanMeta> = {
   "simple-kaffa": {
     priority: "optional",
     durationMinutes: 70,
-    alternatives: ["융캉제 골목 카페", "Fong Da Coffee 보강"],
+    alternatives: ["융캉제 골목 카페", "다른 스페셜티 카페"],
     flexTip: "카페는 분위기 좋은 곳 발견 시 현장에서 바로 교체 가능."
   },
   "zhang-men": {
