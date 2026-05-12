@@ -3,13 +3,13 @@ import "./globals.css";
 import { PwaRegister } from "./components/PwaRegister";
 
 export const metadata: Metadata = {
-  title: "🇹🇼 Y & S Taipei · 西門町 Trip Diary",
+  title: "Y&S Taipei · 西門町 Trip Diary",
   description: "5.15-5.18 타이베이 여행 일정과 우리가 남길 기록",
-  applicationName: "Y & S Taipei",
+  applicationName: "Y&S Taipei",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Y & S Taipei"
+    title: "Y&S Taipei"
   }
 };
 

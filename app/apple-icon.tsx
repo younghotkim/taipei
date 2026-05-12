@@ -14,13 +14,32 @@ export default function AppleIcon() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          gap: 6,
-          background:
-            "linear-gradient(135deg, #ff2d95 0%, #00e8ff 55%, #b362ff 100%)"
+          gap: 8,
+          background: "linear-gradient(152deg, #ff2d95 0%, #b362ff 46%, #00e8ff 100%)"
         }}
       >
-        <div style={{ fontSize: 84, lineHeight: 1 }}>🇹🇼</div>
-        <div style={{ fontSize: 46, fontWeight: 900, color: "#fff" }}>Y&amp;S</div>
+        <div
+          style={{
+            fontSize: 80,
+            fontWeight: 900,
+            color: "#fff",
+            lineHeight: 1,
+            letterSpacing: "-0.02em",
+            textShadow: "0 4px 12px rgba(11, 4, 30, 0.4)"
+          }}
+        >
+          Y&amp;S
+        </div>
+        <div
+          style={{
+            fontSize: 20,
+            fontWeight: 800,
+            color: "rgba(11, 4, 30, 0.82)",
+            letterSpacing: "0.32em"
+          }}
+        >
+          TAIPEI
+        </div>
       </div>
     ),
     size
