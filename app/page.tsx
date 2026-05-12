@@ -20,6 +20,7 @@ import {
   Luggage,
   Map as MapIcon,
   Navigation,
+  Paperclip,
   Pencil,
   Plus,
   RefreshCw,
@@ -42,6 +43,7 @@ import { PhotoUploader } from "./components/PhotoUploader";
 import { PackingList } from "./components/PackingList";
 import { TaipeiInfo } from "./components/TaipeiInfo";
 import { FlightStatusBadge } from "./components/FlightStatusBadge";
+import { VaultFileField } from "./components/VaultFileField";
 import { ItineraryProvider, useItineraryContext } from "./components/ItineraryContext";
 import { StopEditor, DayEditor } from "./components/StopEditor";
 import { CommentThread } from "./components/CommentThread";
@@ -1316,8 +1318,9 @@ function VaultMode({
           </label>
           <label className="field field--wide">
             <span>예약/문서 링크</span>
-            <input value={draft.link} onChange={(e) => updateDraft("link", e.target.value)} placeholder="예약 페이지, PDF, Google Drive, 메일 링크" />
+            <input value={draft.link} onChange={(e) => updateDraft("link", e.target.value)} placeholder="예약 페이지, Google Drive, 메일 링크" />
           </label>
+          <VaultFileField value={draft.documentUrl} itemId={draft.id} onChange={(url) => updateDraft("documentUrl", url)} />
           <label className="field field--wide">
             <span>메모</span>
             <textarea value={draft.notes} onChange={(e) => updateDraft("notes", e.target.value)} placeholder="체크인 조건, 준비물, 취소 규정, 현장 제시 방법" />
@@ -1377,6 +1380,12 @@ function VaultMode({
                 <a href={item.link} target="_blank" rel="noreferrer">
                   <ExternalLink size={14} />
                   열기
+                </a>
+              )}
+              {item.documentUrl && (
+                <a href={item.documentUrl} target="_blank" rel="noreferrer">
+                  <Paperclip size={14} />
+                  첨부
                 </a>
               )}
               <button onClick={() => startEdit(item)}>

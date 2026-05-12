@@ -2129,6 +2129,19 @@ a {
   text-transform: uppercase;
 }
 
+.ledger-add__krw {
+  margin: -2px 2px 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ledger-add__krw small {
+  margin-left: 4px;
+  color: var(--neon-jade);
+  font-weight: 900;
+}
+
 .ledger-add__main {
   display: flex;
   gap: 8px;
@@ -2730,6 +2743,246 @@ a {
 
 .flight-status .spin {
   animation: spin 1s linear infinite;
+}
+
+/* ---- 보관함 첨부 파일 ---- */
+.vault-file__add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  padding: 9px 14px;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  background: rgba(20, 9, 46, 0.5);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.vault-file__add:hover {
+  border-color: rgba(0, 232, 255, 0.4);
+  color: var(--ink);
+}
+
+.vault-file__add .spin {
+  animation: spin 1s linear infinite;
+}
+
+.vault-file__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  background: rgba(20, 9, 46, 0.6);
+}
+
+.vault-file__thumb {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: block;
+}
+
+.vault-file__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.vault-file__icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(0, 232, 255, 0.1);
+  color: var(--neon-cyan);
+}
+
+.vault-file__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--neon-cyan);
+  font-size: 12px;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vault-file__clear {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted-dim);
+}
+
+.vault-file__clear:hover {
+  color: var(--neon-pink);
+}
+
+.vault-file__error {
+  font-style: normal;
+  color: var(--neon-red);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ---- 근처 추천 (오늘 모드) ---- */
+.nearby {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(54, 255, 179, 0.2);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(54, 255, 179, 0.05), transparent),
+    rgba(14, 6, 36, 0.7);
+}
+
+.nearby__head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--neon-jade);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.nearby__cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.nearby__cat {
+  padding: 7px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(26, 12, 56, 0.7);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.nearby__cat--on {
+  border-color: var(--neon-jade);
+  background: rgba(54, 255, 179, 0.14);
+  color: var(--neon-jade);
+}
+
+.nearby__results {
+  display: grid;
+  gap: 6px;
+}
+
+.nearby__msg {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.nearby__msg .spin {
+  animation: spin 1s linear infinite;
+}
+
+.nearby-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 9px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(20, 9, 46, 0.55);
+}
+
+.nearby-item:hover {
+  border-color: rgba(54, 255, 179, 0.3);
+}
+
+.nearby-item__main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.nearby-item__main strong {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nearby-item__main small {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted-dim);
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.nearby-item__rate {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--neon-gold);
+  font-weight: 900;
+}
+
+.nearby-item__open {
+  color: var(--neon-jade);
+  font-weight: 900;
+}
+
+.nearby-item__closed {
+  color: var(--neon-red);
+  font-weight: 900;
+}
+
+.nearby-item__addr {
+  flex: 1 1 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nearby-item__dist {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
 .vault-card__actions {

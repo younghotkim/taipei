@@ -28,14 +28,23 @@ export async function POST(request: NextRequest) {
   }
 
   const contentType =
-    (file as File).type && (file as File).type.length > 0 ? (file as File).type : "image/jpeg";
-  const extension = contentType.includes("png")
+    (file as File).type && (file as File).type.length > 0 ? (file as File).type : "application/octet-stream";
+  const origName = typeof (file as File).name === "string" ? (file as File).name : "";
+  const extFromName = origName.includes(".")
+    ? origName.split(".").pop()!.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 5)
+    : "";
+  const extFromType = contentType.includes("png")
     ? "png"
     : contentType.includes("webp")
       ? "webp"
       : contentType.includes("heic")
         ? "heic"
-        : "jpg";
+        : contentType.includes("pdf")
+          ? "pdf"
+          : contentType.startsWith("image/")
+            ? "jpg"
+            : "bin";
+  const extension = extFromName || extFromType;
   const filename = `${tripId}/${stopId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extension}`;
 
   const supabase = createSupabaseServerClient();

@@ -21,6 +21,7 @@ import { WeatherBar } from "./WeatherBar";
 import { TwdKrwLabel } from "./ExpenseDashboard";
 import { NextStopEta } from "./NextStopEta";
 import { GpsAutoStatus } from "./GpsAutoStatus";
+import { NearbyPlaces } from "./NearbyPlaces";
 import { useItineraryContext } from "./ItineraryContext";
 import {
   categoryColors,
@@ -592,7 +593,7 @@ export function TodayMode({
                 { q: "화장실", label: "🚻 화장실" },
                 { q: "편의점", label: "🏪 편의점" },
                 { q: "ATM", label: "🏧 ATM" },
-                { q: "카페", label: "☕ 카페" }
+                { q: "약국", label: "💊 약국" }
               ].map(({ q, label }) => (
                 <a
                   key={q}
@@ -605,6 +606,8 @@ export function TodayMode({
               ))}
             </div>
           </div>
+
+          <NearbyPlaces lat={currentQuest.lat} lng={currentQuest.lng} />
         </section>
       ) : (
         <section className="quest-card quest-card--done">

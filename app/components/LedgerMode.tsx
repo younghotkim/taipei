@@ -196,6 +196,11 @@ export function LedgerMode({
             추가
           </button>
         </div>
+        {Number(amount) > 0 && (
+          <div className="ledger-add__krw">
+            TWD {Number(amount).toLocaleString()} <TwdKrwLabel twd={Number(amount)} />
+          </div>
+        )}
         <input
           className="ledger-add__label"
           value={label}
