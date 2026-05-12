@@ -250,6 +250,8 @@ const notifyStorageKey = "taipei-trip-quest-notify-v1";
 
 const dirUrl = (lat: number, lng: number) =>
   `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=walking`;
+const transitUrl = (lat: number, lng: number) =>
+  `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=transit`;
 const nearUrl = (query: string, lat: number, lng: number) =>
   `https://www.google.com/maps/search/${encodeURIComponent(query)}/@${lat},${lng},16z`;
 
@@ -585,15 +587,25 @@ export function TodayMode({
           </div>
 
           <div className="quest-nav">
-            <a
-              className="quest-maps"
-              href={dirUrl(currentQuest.lat, currentQuest.lng)}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <Navigation size={14} />
-              여기로 길찾기 (도보)
-            </a>
+            <div className="quest-maps-row">
+              <a
+                className="quest-maps"
+                href={dirUrl(currentQuest.lat, currentQuest.lng)}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Navigation size={14} />
+                길찾기 (도보)
+              </a>
+              <a
+                className="quest-maps quest-maps--transit"
+                href={transitUrl(currentQuest.lat, currentQuest.lng)}
+                target="_blank"
+                rel="noreferrer"
+              >
+                🚇 대중교통(MRT)
+              </a>
+            </div>
             <div className="quest-near">
               {[
                 { q: "화장실", label: "🚻 화장실" },
@@ -657,7 +669,15 @@ export function TodayMode({
               rel="noreferrer"
             >
               <Navigation size={13} />
-              길찾기
+              도보
+            </a>
+            <a
+              className="quest-next__dir quest-next__dir--transit"
+              href={transitUrl(nextQuest.lat, nextQuest.lng)}
+              target="_blank"
+              rel="noreferrer"
+            >
+              🚇 MRT
             </a>
             <button className="quest-next__jump" onClick={() => onSelectStop(nextQuest)}>
               미리 보기 →

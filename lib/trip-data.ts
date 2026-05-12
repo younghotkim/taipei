@@ -113,14 +113,20 @@ export const tripStops: TripStop[] = [
     title: "송산공항 도착 — 입국 & 이동",
     subtitle: "TW667 · 김포(GMP) → 타이베이 송산(TSA)",
     nameZh: "台北松山機場 (TSA)",
-    mrt: "송산공항역(松山機場站) · 文湖線 BR12",
+    mrt: "松山機場역 文湖線 BR12 → 忠孝復興 환승 → 板南線 西門역 BL11 → 1번출구 도보 3분",
     phrase: "我要買一張悠遊卡，謝謝。",
     phrasePron: "wǒ yào mǎi yī zhāng yōuyóukǎ, xièxie",
     phraseHint: "이지카드(悠遊卡) 한 장 주세요",
     category: "transit",
     lat: 25.0633,
     lng: 121.552,
-    highlights: ["입국심사 · 짐 찾기", "悠遊卡(EasyCard) 구매·충전 (NT$100)", "文湖線 → 忠孝復興 환승 → 板南線(BL) 西門站 (~25분)"],
+    highlights: [
+      "① 입국심사 · 짐 찾기 → 1F에서 悠遊卡(EasyCard) 구매·충전 (NT$100)",
+      "② MRT 文湖線(갈색·BR) 松山機場역 BR12 탑승 (시먼/타이베이 방향)",
+      "③ 忠孝復興역 BR10에서 板南線(파랑·BL)으로 환승",
+      "④ 板南線 西門역 BL11 하차 → 1번 출구 → 도보 3분 = 호텔",
+      "총 ~25~30분 · NT$25 내외 (아래 「🚇 대중교통」 버튼 = 구글맵 실시간 안내)"
+    ],
     prompt: "대만 도착! 짐 찾고 이지카드 사서 문후선 타고 시먼딩으로. 도착 첫 사진 한 장.",
     mapsQuery: "Taipei Songshan Airport"
   },

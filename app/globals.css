@@ -5529,6 +5529,37 @@ a {
   background: rgba(0, 232, 255, 0.14);
 }
 
+.quest-maps-row {
+  display: flex;
+  gap: 8px;
+}
+
+.quest-maps-row .quest-maps {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.quest-maps--transit {
+  border-color: rgba(54, 255, 179, 0.36);
+  background: rgba(54, 255, 179, 0.1);
+  color: var(--neon-jade);
+}
+
+.quest-maps--transit:hover {
+  border-color: var(--neon-jade);
+  background: rgba(54, 255, 179, 0.18);
+}
+
+.quest-next__dir--transit {
+  border-color: rgba(0, 232, 255, 0.36);
+  background: rgba(0, 232, 255, 0.1);
+  color: var(--neon-cyan);
+}
+
+.quest-next__dir--transit:hover {
+  background: rgba(0, 232, 255, 0.2);
+}
+
 .quest-near {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
