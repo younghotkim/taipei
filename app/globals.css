@@ -610,8 +610,11 @@ a {
 .stop-list {
   display: grid;
   gap: 10px;
+  flex: 1 1 0;
+  min-height: 0;
   overflow: auto;
   padding: 14px;
+  align-content: start;
 }
 
 .stop-row {
@@ -1386,13 +1389,63 @@ a {
   }
 
   .stop-list {
-    max-height: 440px;
     padding: 12px;
   }
 
   .stop-row {
     grid-template-columns: 52px minmax(0, 1fr) 32px;
     padding: 12px;
+  }
+
+  /* edit mode: 2-line row so the title is readable and the controls are tappable */
+  .stop-row--edit {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "main     main     main"
+      "reorder  priority archive";
+    gap: 8px 10px;
+    padding: 12px 14px;
+    align-items: center;
+  }
+
+  .stop-row__main--edit {
+    grid-area: main;
+  }
+
+  .stop-row__main--edit strong {
+    font-size: 15px;
+    white-space: normal;
+  }
+
+  .stop-row__main--edit small {
+    margin-top: 2px;
+    font-size: 12.5px;
+    white-space: normal;
+  }
+
+  .stop-row__reorder {
+    grid-area: reorder;
+    grid-auto-flow: column;
+    gap: 8px;
+  }
+
+  .stop-row__reorder button {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+  }
+
+  .stop-row--edit .stop-row__priority {
+    grid-area: priority;
+    height: 38px;
+    padding: 0 10px;
+    font-size: 13px;
+  }
+
+  .stop-row__archive {
+    grid-area: archive;
+    width: 38px;
+    height: 38px;
   }
 
   .map-floating--top {
@@ -4158,6 +4211,47 @@ a {
 .day-editor {
   display: grid;
   gap: 12px;
+  flex: 0 0 auto;
+}
+
+.day-editor__toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 2px;
+  background: transparent;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 45, 149, 0.18);
+}
+
+.day-editor__toggle strong {
+  color: var(--neon-pink);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.day-editor__hint {
+  color: var(--muted-dim);
+  font-size: 11px;
+  font-weight: 800;
+  font-style: normal;
+}
+
+.day-editor--open .day-editor__hint {
+  display: none;
+}
+
+.day-editor__toggle svg {
+  margin-left: auto;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+.day-editor__save {
+  justify-self: end;
 }
 
 .stop-editor__head,

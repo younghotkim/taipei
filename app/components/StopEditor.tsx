@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, MapPin, Save, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2, MapPin, Save, Trash2 } from "lucide-react";
 import {
   categoryLabels,
   priorityLabels,
@@ -335,6 +335,7 @@ export function DayEditor({
   const [summary, setSummary] = useState(day.summary);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     setDate(day.date);
@@ -352,58 +353,64 @@ export function DayEditor({
   };
 
   return (
-    <div className="day-editor">
-      <div className="day-editor__head">
+    <div className={open ? "day-editor day-editor--open" : "day-editor"}>
+      <button className="day-editor__toggle" onClick={() => setOpen((v) => !v)}>
         <strong>Day {day.day} 메타</strong>
-        <button className="stop-editor__save" onClick={handleSave} disabled={saving || !dirty}>
-          {saving ? <Loader2 size={14} className="weather-bar__spinner" /> : <Save size={14} />}
-          {saving ? "저장 중" : dirty ? "저장" : "저장됨"}
-        </button>
-      </div>
-      <div className="stop-editor__grid">
-        <label className="field field--narrow">
-          <span>날짜</span>
-          <input
-            value={date}
-            onChange={(e) => {
-              setDate(e.target.value);
-              setDirty(true);
-            }}
-            placeholder="5/15 금"
-          />
-        </label>
-        <label className="field field--wide">
-          <span>타이틀</span>
-          <input
-            value={title}
-            onChange={(e) => {
-              setTitle(e.target.value);
-              setDirty(true);
-            }}
-          />
-        </label>
-      </div>
-      <label className="field">
-        <span>무드</span>
-        <input
-          value={mood}
-          onChange={(e) => {
-            setMood(e.target.value);
-            setDirty(true);
-          }}
-        />
-      </label>
-      <label className="field">
-        <span>요약</span>
-        <textarea
-          value={summary}
-          onChange={(e) => {
-            setSummary(e.target.value);
-            setDirty(true);
-          }}
-          rows={2}
-        />
-      </label>
+        {!open && <em className="day-editor__hint">{dirty ? "● 저장 안 됨" : "날짜·타이틀·무드"}</em>}
+        {open ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+      </button>
+      {open && (
+        <>
+          <div className="stop-editor__grid">
+            <label className="field field--narrow">
+              <span>날짜</span>
+              <input
+                value={date}
+                onChange={(e) => {
+                  setDate(e.target.value);
+                  setDirty(true);
+                }}
+                placeholder="5/15 금"
+              />
+            </label>
+            <label className="field field--wide">
+              <span>타이틀</span>
+              <input
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  setDirty(true);
+                }}
+              />
+            </label>
+          </div>
+          <label className="field">
+            <span>무드</span>
+            <input
+              value={mood}
+              onChange={(e) => {
+                setMood(e.target.value);
+                setDirty(true);
+              }}
+            />
+          </label>
+          <label className="field">
+            <span>요약</span>
+            <textarea
+              value={summary}
+              onChange={(e) => {
+                setSummary(e.target.value);
+                setDirty(true);
+              }}
+              rows={2}
+            />
+          </label>
+          <button className="stop-editor__save day-editor__save" onClick={handleSave} disabled={saving || !dirty}>
+            {saving ? <Loader2 size={14} className="weather-bar__spinner" /> : <Save size={14} />}
+            {saving ? "저장 중" : dirty ? "저장" : "저장됨"}
+          </button>
+        </>
+      )}
     </div>
   );
 }
