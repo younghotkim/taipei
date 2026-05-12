@@ -62,16 +62,16 @@ export const tripDays: TripDay[] = [
   {
     day: 2,
     date: "5/16 토",
-    title: "위스키 성지 투어 & 냉천",
-    mood: "이란으로 떠나는 카발란 데이",
-    summary: "아침 이동 후 카발란 양조장과 쑤아오 냉천, 저녁에는 타이베이 야시장과 맥주."
+    title: "이란 카발란 + 쑤아오 냉천",
+    mood: "느긋한 조식 → 기차로 이란 데이트립",
+    summary: "호텔 조식 → 타이베이역에서 기차로 이란 → 로컬 점심 → 카발란 양조장 → 쑤아오 냉천 → 닝샤 야시장 → 호텔 복귀."
   },
   {
     day: 3,
     date: "5/17 일",
-    title: "융캉제 정복",
-    mood: "커피, 딤섬, 낮맥, 위스키",
-    summary: "중정기념당에서 시작해 융캉제의 카페, 딘타이펑, 총좌빙, 바 문화를 촘촘히 즐기는 날."
+    title: "융캉제 + 마라 훠궈 + 바 호핑",
+    mood: "커피, 딤섬, 낮맥, 마라 훠궈, 위스키",
+    summary: "중정기념당 → 융캉제 딘타이펑·커피·낮맥 → 鼎王 마라 훠궈 저녁 → Bar Mood → Fake Sober로 마무리."
   },
   {
     day: 4,
@@ -258,32 +258,51 @@ export const tripStops: TripStop[] = [
     mapsQuery: "Hanko 60 Taipei"
   },
   {
+    id: "hotel-breakfast",
+    day: 2,
+    date: "5/16 토",
+    time: "08:30",
+    title: "호텔 조식",
+    subtitle: "느긋하게 출발 (08:30~09:30)",
+    nameZh: "Midtown Richardson 西門館",
+    mrt: "호텔 내",
+    phrase: "早餐供應到幾點？",
+    phrasePron: "zǎocān gōngyìng dào jǐ diǎn?",
+    phraseHint: "조식 몇 시까지예요?",
+    category: "hotel",
+    lat: 25.0427142,
+    lng: 121.5094583,
+    highlights: ["조식 시간 확인 (보통 ~10:00)", "체크아웃 아님 — 짐 두고 출발", "오늘 일정 가볍게"],
+    prompt: "조식 메뉴 중 마음에 든 것, 오늘 컨디션 한 줄.",
+    mapsQuery: "Midtown Richardson Hotel Ximen Taipei"
+  },
+  {
     id: "yilan-transfer",
     day: 2,
     date: "5/16 토",
-    time: "09:30",
-    title: "이란 이동",
-    subtitle: "버스 또는 기차로 이동",
-    nameZh: "宜蘭・轉乘",
-    mrt: "타이베이역(台北車站) → 이란(宜蘭) · 기차/버스",
-    phrase: "一張到宜蘭的車票，謝謝。",
-    phrasePron: "yī zhāng dào Yílán de chēpiào, xièxie",
-    phraseHint: "이란행 표 한 장 주세요",
+    time: "10:00",
+    title: "타이베이역 → 이란 (기차)",
+    subtitle: "10:00 타이베이역 → 11시 전후 탑승 → 12:00 이란 도착",
+    nameZh: "台北車站 → 宜蘭 (台鐵)",
+    mrt: "타이베이역(台北車站) M8 / R10 / BL12",
+    phrase: "兩張到宜蘭的火車票，謝謝。",
+    phrasePron: "liǎng zhāng dào Yílán de huǒchēpiào, xièxie",
+    phraseHint: "이란행 기차표 두 장이요",
     category: "transit",
-    lat: 24.7545,
-    lng: 121.7587,
-    highlights: ["아침 이동", "차창 풍경", "카발란 준비"],
-    prompt: "이동 중 들은 노래나 가장 좋았던 풍경을 기록.",
-    mapsQuery: "Yilan Taiwan"
+    lat: 25.0478,
+    lng: 121.517,
+    highlights: ["台鐵 자강/거광호 ~1시간 10분", "주말 매진 — 예매 권장", "12:00 이란역 도착"],
+    prompt: "차창 풍경이나 이동 중 들은 노래 한 줄.",
+    mapsQuery: "Taipei Main Station"
   },
   {
     id: "yilan-brunch",
     day: 2,
     date: "5/16 토",
-    time: "11:30",
-    title: "이란 브런치",
-    subtitle: "니우셔빙 & 육갱",
-    nameZh: "宜蘭早午餐",
+    time: "12:30",
+    title: "이란 로컬 점심",
+    subtitle: "우셔빙·육갱 등 이란 명물",
+    nameZh: "宜蘭在地午餐",
     mrt: "이란역(宜蘭車站)에서 도보",
     phrase: "牛舌餅一份，一碗肉羹。",
     phrasePron: "niúshébǐng yī fèn, yī wǎn ròugēng",
@@ -291,7 +310,7 @@ export const tripStops: TripStop[] = [
     category: "food",
     lat: 24.758,
     lng: 121.753,
-    highlights: ["소혀 모양 과자", "마늘 고기 국수", "지역 음식"],
+    highlights: ["소혀 모양 과자(우셔빙)", "마늘 고기 국수(육갱)", "카발란 가기 전 든든히"],
     prompt: "처음 먹어본 이란 음식 중 다시 먹고 싶은 메뉴 선택.",
     mapsQuery: "Yilan niu she bing rou geng"
   },
@@ -353,23 +372,23 @@ export const tripStops: TripStop[] = [
     mapsQuery: "Ningxia Night Market Taipei"
   },
   {
-    id: "mikkeller",
+    id: "day2-wrap",
     day: 2,
     date: "5/16 토",
-    time: "22:00",
-    title: "Mikkeller Taipei",
-    subtitle: "다다오청 오래된 건물의 맥주",
-    nameZh: "Mikkeller Taipei",
-    mrt: "베이먼역(北門站) G13",
-    phrase: "一杯 IPA，一杯 Sour。",
-    phrasePron: "yī bēi IPA, yī bēi Sour",
-    phraseHint: "IPA 한 잔, 사워 한 잔이요",
-    category: "beer",
-    lat: 25.0556,
-    lng: 121.5108,
-    highlights: ["미켈러", "다다오청", "2일차 건배"],
-    prompt: "캔 디자인이나 탭 리스트 중 가장 마음에 든 것 저장.",
-    mapsQuery: "Mikkeller Taipei"
+    time: "21:30",
+    title: "마무리 — 숙소 복귀",
+    subtitle: "야시장 후 호텔로 (피곤하면 바로, 여유 있으면 한잔)",
+    nameZh: "西門町 (호텔 부근)",
+    mrt: "시먼역(西門站) 일대",
+    phrase: "一瓶台灣啤酒，謝謝。",
+    phrasePron: "yī píng Táiwān píjiǔ, xièxie",
+    phraseHint: "타이완 맥주 한 병 주세요",
+    category: "hotel",
+    lat: 25.0427142,
+    lng: 121.5094583,
+    highlights: ["피곤하면 바로 호텔", "여유 있으면 호텔 근처 바/편의점 맥주", "이튿날 무리 안 함"],
+    prompt: "Day 2 한 줄 정리 — 카발란·냉천·야시장 중 베스트.",
+    mapsQuery: "Ximending Taipei"
   },
   {
     id: "cks",
@@ -429,10 +448,29 @@ export const tripStops: TripStop[] = [
     mapsQuery: "Simple Kaffa Taipei Yongkang"
   },
   {
+    id: "slow-spa-massage",
+    day: 3,
+    date: "5/17 일",
+    time: "15:00",
+    title: "전신 마사지 — 慢SPA",
+    subtitle: "오전 산책 후 휴식 (전신/등/머리)",
+    nameZh: "慢SPA 全身按摩",
+    mrt: "둥먼역(東門站) 일대",
+    phrase: "兩位，全身按摩六十分鐘，謝謝。",
+    phrasePron: "liǎng wèi, quánshēn ànmó liùshí fēnzhōng, xièxie",
+    phraseHint: "두 명, 전신 마사지 60분이요",
+    category: "sight",
+    lat: 25.0361651,
+    lng: 121.5275284,
+    highlights: ["전신/등/머리 마사지 (1인 1실)", "예약 권장", "융캉제·東門 도보권"],
+    prompt: "마사지 전후 컨디션 차이, 또 오고 싶은지 한 줄.",
+    mapsQuery: "慢SPA 全身按摩 台北 東門"
+  },
+  {
     id: "zhang-men",
     day: 3,
     date: "5/17 일",
-    time: "16:00",
+    time: "16:30",
     title: "Zhang Men Brewing",
     subtitle: "융캉제 본점 낮맥 샘플러",
     nameZh: "掌門精釀啤酒 永康店",
@@ -448,23 +486,23 @@ export const tripStops: TripStop[] = [
     mapsQuery: "Zhang Men Brewing Yongkang Taipei"
   },
   {
-    id: "yongkang-scallion",
+    id: "dingwang-hotpot",
     day: 3,
     date: "5/17 일",
     time: "18:00",
-    title: "융캉제 총좌빙",
-    subtitle: "치즈와 계란 추가 추천",
-    nameZh: "天津蔥抓餅",
-    mrt: "둥먼역(東門站) R7",
-    phrase: "一份蔥抓餅，加蛋加起司。",
-    phrasePron: "yī fèn cōngzhuābǐng, jiā dàn jiā qǐsī",
-    phraseHint: "총좌빙 하나, 계란이랑 치즈 추가요",
+    title: "鼎王 마라훠궈 (저녁)",
+    subtitle: "대만 대표 마라 훠궈 — 鴛鴦鍋(반반)으로",
+    nameZh: "鼎王麻辣鍋",
+    mrt: "중샤오푸싱역(忠孝復興站) BR10 일대",
+    phrase: "兩位，鴛鴦鍋（微辣），謝謝。",
+    phrasePron: "liǎng wèi, yuānyāng guō (wēi là), xièxie",
+    phraseHint: "두 명, 원앙(반반)탕 — 약간만 맵게요",
     category: "food",
-    lat: 25.0327,
-    lng: 121.5299,
-    highlights: ["총좌빙", "치즈", "계란"],
-    prompt: "기다린 시간과 맛의 보상 정도를 기록.",
-    mapsQuery: "Yongkang Street scallion pancake"
+    lat: 25.0413,
+    lng: 121.5436,
+    highlights: ["鴛鴦鍋 — 마라/백탕 반반", "예약 권장 (성수기 웨이팅)", "탕바·반찬 무료 리필"],
+    prompt: "마라 강도, 제일 맛있던 재료, 다음에 또 시킬 것 한 줄.",
+    mapsQuery: "鼎王麻辣鍋 台北"
   },
   {
     id: "bar-mood",
@@ -486,23 +524,23 @@ export const tripStops: TripStop[] = [
     mapsQuery: "Bar Mood Taipei"
   },
   {
-    id: "public-house",
+    id: "fake-sober",
     day: 3,
     date: "5/17 일",
     time: "22:30",
-    title: "The Public House",
-    subtitle: "마지막 밤의 바 문화",
-    nameZh: "The Public House",
-    mrt: "중샤오푸싱역(忠孝復興站) BR10",
-    phrase: "兩杯威士忌，加冰塊。",
-    phrasePron: "liǎng bēi wēishìjì, jiā bīngkuài",
-    phraseHint: "위스키 두 잔, 얼음 넣어서요",
+    title: "Fake Sober (마지막 밤 바)",
+    subtitle: "타이베이 스피크이지 칵테일 바",
+    nameZh: "Fake Sober Taipei",
+    mrt: "信義安和(R05) / 通化夜市 일대",
+    phrase: "兩位，請推薦招牌調酒。",
+    phrasePron: "liǎng wèi, qǐng tuījiàn zhāopái tiáojiǔ",
+    phraseHint: "두 명, 시그니처 칵테일 추천해 주세요",
     category: "whisky",
-    lat: 25.0419,
-    lng: 121.5487,
-    highlights: ["마지막 밤", "바 호핑", "위스키"],
+    lat: 25.0352052,
+    lng: 121.5674503,
+    highlights: ["시그니처 칵테일", "마지막 밤 마무리", "예약/웨이팅 확인"],
     prompt: "여행 마지막 밤의 한 문장 일기 쓰기.",
-    mapsQuery: "The Public House Taipei bar"
+    mapsQuery: "Fake Sober Taipei bar"
   },
   {
     id: "niudian",
@@ -649,11 +687,17 @@ export const stopPlanMeta: Record<string, StopPlanMeta> = {
     alternatives: ["시먼딩 야식", "라오허제 야시장"],
     flexTip: "귀환 시간이 늦어지면 먹고 싶은 메뉴 2개만 고르고 짧게."
   },
-  mikkeller: {
+  "hotel-breakfast": {
     priority: "optional",
-    durationMinutes: 75,
-    alternatives: ["호텔 복귀", "다다오청 산책만"],
-    flexTip: "이란 당일치기 후 피로도가 높으면 다음날 낮맥으로 대체."
+    durationMinutes: 60,
+    alternatives: ["호텔 근처 카페·아침", "출발 전 편의점 간단식"],
+    flexTip: "기차 시간만 맞추면 됨 — 늦잠 자도 OK."
+  },
+  "day2-wrap": {
+    priority: "optional",
+    durationMinutes: 60,
+    alternatives: ["바로 호텔 복귀", "호텔 근처 바 한 잔", "편의점 맥주"],
+    flexTip: "이란 당일치기 후라 피곤하면 그냥 호텔로."
   },
   cks: {
     priority: "must",
@@ -673,29 +717,35 @@ export const stopPlanMeta: Record<string, StopPlanMeta> = {
     alternatives: ["융캉제 골목 카페", "다른 스페셜티 카페"],
     flexTip: "카페는 분위기 좋은 곳 발견 시 현장에서 바로 교체 가능."
   },
+  "slow-spa-massage": {
+    priority: "optional",
+    durationMinutes: 75,
+    alternatives: ["다른 東門 마사지샵", "호텔에서 낮잠"],
+    flexTip: "예약 권장. 시간 빠듯하면 60분으로, 더 피곤하면 90분으로."
+  },
   "zhang-men": {
     priority: "optional",
     durationMinutes: 70,
     alternatives: ["Taihu 맥주 추가", "카페 휴식 연장"],
     flexTip: "저녁 바를 강하게 갈 예정이면 샘플러만 짧게."
   },
-  "yongkang-scallion": {
+  "dingwang-hotpot": {
     priority: "must",
-    durationMinutes: 35,
-    alternatives: ["망고빙수", "융캉제 누가 크래커"],
-    flexTip: "줄이 길면 한 명이 줄 서고 한 명은 쇼핑 후보 확인."
+    durationMinutes: 120,
+    alternatives: ["다른 마라 훠궈 (馬辣/詹記)", "융캉제 총좌빙·간단식"],
+    flexTip: "성수기엔 미리 예약. 웨이팅 길면 한 명 줄 서고 한 명은 근처 산책."
   },
   "bar-mood": {
     priority: "must",
     durationMinutes: 100,
-    alternatives: ["The Public House", "Ounce Taipei"],
-    flexTip: "마지막 밤 핵심 바. 예약/대기 상황에 따라 Public House와 순서 교체."
+    alternatives: ["Fake Sober", "Ounce Taipei"],
+    flexTip: "마지막 밤 핵심 바. 예약/대기 상황에 따라 Fake Sober와 순서 교체."
   },
-  "public-house": {
+  "fake-sober": {
     priority: "optional",
     durationMinutes: 80,
     alternatives: ["Bar Mood에서 오래 머물기", "호텔 복귀"],
-    flexTip: "Bar Mood 만족도가 높으면 무리해서 이동하지 않아도 됨."
+    flexTip: "Bar Mood 만족도가 높으면 무리해서 이동하지 않아도 됨. 예약/웨이팅 확인."
   },
   niudian: {
     priority: "must",
