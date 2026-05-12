@@ -150,6 +150,25 @@ export const tripStops: TripStop[] = [
     mapsQuery: "Midtown Richardson Hotel Ximen Taipei"
   },
   {
+    id: "red-house",
+    day: 1,
+    date: "5/15 금",
+    time: "15:00",
+    title: "西門紅樓 (선택)",
+    subtitle: "역사건물 + 디자인 기념품 마켓 + 뒤편 카페골목",
+    nameZh: "西門紅樓",
+    mrt: "시먼역(西門站) 1번 출구 도보 1분",
+    phrase: "請問有什麼推薦的紀念品？",
+    phrasePron: "qǐngwèn yǒu shénme tuījiàn de jìniànpǐn?",
+    phraseHint: "추천할 만한 기념품 있어요?",
+    category: "sight",
+    lat: 25.042,
+    lng: 121.5066,
+    highlights: ["8각형 역사건물(1908) — 시먼딩 랜드마크", "안쪽 16工房 — 대만 디자인 기념품", "뒤편 카페·바 거리 (LGBT 프렌들리)", "체크인 후 가볍게 워밍업 산책"],
+    prompt: "기념품 후보 하나, 건물 사진 한 장.",
+    mapsQuery: "Ximen Red House Taipei"
+  },
+  {
     id: "hot-star",
     day: 1,
     date: "5/15 금",
@@ -205,6 +224,25 @@ export const tripStops: TripStop[] = [
     highlights: ["야경", "소원", "도보 15분 코스"],
     prompt: "서로에게 말하지 않은 소원을 하나씩 비밀 기록으로 남기기.",
     mapsQuery: "Longshan Temple Taipei"
+  },
+  {
+    id: "huaxi-market",
+    day: 1,
+    date: "5/15 금",
+    time: "19:00",
+    title: "華西街 야시장 (선택)",
+    subtitle: "용산사 옆 老타이베이 야시장 — 후추빵·돼지죽",
+    nameZh: "華西街觀光夜市",
+    mrt: "룽산스역(龍山寺站) 1번 출구 도보 3분",
+    phrase: "一個胡椒餅，謝謝。",
+    phrasePron: "yī gè hújiāobǐng, xièxie",
+    phraseHint: "후추빵 하나 주세요",
+    category: "food",
+    lat: 25.0367,
+    lng: 121.5008,
+    highlights: ["胡椒餅(후추빵)·周記肉粥(돼지죽)", "곱창국수·棺材板(관재판)", "용산사 바로 옆 — 동선 0", "올드한 빈티지 분위기 (호불호)"],
+    prompt: "야시장에서 제일 신박했던 음식 한 줄.",
+    mapsQuery: "Huaxi Street Night Market Taipei"
   },
   {
     id: "taihu-driftwood",
@@ -316,7 +354,7 @@ export const tripStops: TripStop[] = [
     category: "food",
     lat: 24.758,
     lng: 121.753,
-    highlights: ["소혀 모양 과자(우셔빙)", "마늘 고기 국수(육갱)", "카발란 가기 전 든든히"],
+    highlights: ["北門綠豆沙牛乳大王(녹두빙수)·渡小月(이란 향토요리)", "正常鮮肉小籠包·30년 老店 蒜味肉羹(육갱)", "牛舌餅(우셔빙) — 소혀 모양 과자, 사 가기", "카발란 가기 전 든든히"],
     prompt: "처음 먹어본 이란 음식 중 다시 먹고 싶은 메뉴 선택.",
     mapsQuery: "Yilan niu she bing rou geng"
   },
@@ -392,7 +430,7 @@ export const tripStops: TripStop[] = [
     category: "food",
     lat: 25.0567,
     lng: 121.515,
-    highlights: ["굴전", "토란 튀김", "야시장 먹방"],
+    highlights: ["劉芋仔 토란볼(미슐랭 빕)·圓環邊 蚵仔煎(굴전)", "豬肝榮仔(돼지간탕)·鴨頭正二代(오리목)·古早味 麻糬(찹쌀떡)", "굴전 하나·토란전 하나로 시작 — phrase 참고", "닝샤는 작고 알찬 야시장 (한 바퀴면 끝)"],
     prompt: "둘이 고른 야시장 베스트 3 메뉴 기록.",
     mapsQuery: "Ningxia Night Market Taipei"
   },
@@ -430,7 +468,7 @@ export const tripStops: TripStop[] = [
     category: "sight",
     lat: 25.0346,
     lng: 121.5218,
-    highlights: ["광장", "근위병 교대식", "사진 스팟"],
+    highlights: ["광장 · 근위병 교대식 (매시 정각, ~9~17시)", "봄 전시 — 인권·문화유산 (5월 내내)", "自由廣場 봄 푸드 팝업 — 대만 간식 스탠드", "國家戲劇院·音樂廳 사이 사진 스팟"],
     prompt: "광장에서 제일 잘 나온 사진 한 장 고르기.",
     mapsQuery: "Chiang Kai-shek Memorial Hall"
   },
@@ -452,6 +490,25 @@ export const tripStops: TripStop[] = [
     highlights: ["샤오롱바오", "본점", "점심"],
     prompt: "한 입 먹고 서로의 표정 점수 매기기.",
     mapsQuery: "Din Tai Fung Xinyi Road Taipei"
+  },
+  {
+    id: "smoothie-mango",
+    day: 3,
+    date: "5/17 일",
+    time: "13:15",
+    title: "思慕昔 망고빙수 (선택)",
+    subtitle: "5월 망고 시즌 — 永康街 시그니처 디저트",
+    nameZh: "思慕昔 ICE MONSTER (永康店)",
+    mrt: "둥먼역(東門站) R7 도보 3분",
+    phrase: "一份芒果牛奶冰，謝謝。",
+    phrasePron: "yī fèn mángguǒ niúnǎi bīng, xièxie",
+    phraseHint: "망고 우유빙수 하나 주세요",
+    category: "food",
+    lat: 25.0327,
+    lng: 121.5298,
+    highlights: ["5월 = 망고 제철 (제일 맛있을 때)", "永康街 망고빙수 양대산맥 (思慕昔 / 永康冰館)", "딘타이펑 점심 후 디저트로 딱", "사람 많음 — 합석/포장 고려"],
+    prompt: "빙수 비주얼 인증샷, 둘이 점수.",
+    mapsQuery: "Smoothie House Yongkang Taipei"
   },
   {
     id: "simple-kaffa",
@@ -795,6 +852,24 @@ export const stopPlanMeta: Record<string, StopPlanMeta> = {
     durationMinutes: 120,
     alternatives: ["택시 이동", "공항철도 급행"],
     flexTip: "절대 스킵 불가. 다른 모든 마지막 일정은 공항 도착 기준으로 판단."
+  },
+  "red-house": {
+    priority: "backup",
+    durationMinutes: 40,
+    alternatives: ["老天祿 滷味(조림안주 포장)", "三味食堂 거대 사시미(웨이팅 길면 패스)", "반나절 짬 나면 寶藏巖 예술촌(公館)"],
+    flexTip: "체크인 후 컨디션 안 좋으면 생략하고 바로 핫스타로."
+  },
+  "huaxi-market": {
+    priority: "backup",
+    durationMinutes: 30,
+    alternatives: ["용산사만 보고 바로 Taihu로", "西門町 노점 간식으로 대체"],
+    flexTip: "용산사 바로 옆이라 잠깐 둘러보기만 해도 OK."
+  },
+  "smoothie-mango": {
+    priority: "optional",
+    durationMinutes: 35,
+    alternatives: ["永康冰館", "永康牛肉麵(우육면)", "高記(상하이 노포)"],
+    flexTip: "딘타이펑이 늦어지면 빙수만 짧게 포장으로."
   }
 };
 
