@@ -1305,7 +1305,7 @@ a {
     bottom: max(8px, env(safe-area-inset-bottom));
     left: 8px;
     display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 3px;
     border: 1px solid rgba(255, 45, 149, 0.36);
     border-radius: 16px;
@@ -1326,8 +1326,8 @@ a {
     align-content: center;
     gap: 3px;
     padding: 5px 1px;
-    font-size: 8.5px;
-    letter-spacing: 0.02em;
+    font-size: 8px;
+    letter-spacing: 0;
     text-align: center;
   }
 
@@ -2100,7 +2100,7 @@ a {
 }
 
 .ledger-budget header span {
-  color: var(--neon-mint);
+  color: var(--neon-jade);
   font-size: 12px;
   font-weight: 900;
 }
@@ -2115,7 +2115,7 @@ a {
 .ledger-budget__bar > div {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--neon-mint), var(--neon-cyan));
+  background: linear-gradient(90deg, var(--neon-jade), var(--neon-cyan));
 }
 
 .ledger-budget__grid,
@@ -2377,7 +2377,7 @@ a {
   align-items: end;
 }
 
-.vault-head span {
+.vault-head > div:first-child > span {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -2404,6 +2404,14 @@ a {
 .vault-stats div {
   display: grid;
   gap: 2px;
+}
+
+.vault-stats span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .vault-stats strong {
