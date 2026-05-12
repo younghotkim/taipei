@@ -232,8 +232,8 @@ export const tripStops: TripStop[] = [
     phrasePron: "liǎng wèi, jiǎodǐ ànmó, xièxie",
     phraseHint: "두 명, 발마사지요",
     category: "sight",
-    lat: 25.0438,
-    lng: 121.5072,
+    lat: 25.0423512,
+    lng: 121.5048014,
     highlights: ["발마사지 40분 / 60분", "탭 맥주 → 발 풀고 → 바", "팁 부담 없음 (대만)"],
     prompt: "발마사지 만족도랑 끝나고 발이 얼마나 가벼워졌는지 한 줄.",
     mapsQuery: "足spa101 西門町 Taipei foot massage"
