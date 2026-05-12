@@ -49,13 +49,19 @@ export async function POST(request: NextRequest) {
 
   const supabase = createSupabaseServerClient();
   const arrayBuffer = await file.arrayBuffer();
-  const { error: uploadError } = await supabase.storage
-    .from(photoBucket)
-    .upload(filename, arrayBuffer, {
+  const doUpload = () =>
+    supabase.storage.from(photoBucket).upload(filename, arrayBuffer, {
       contentType,
       cacheControl: "3600",
       upsert: false
     });
+
+  let { error: uploadError } = await doUpload();
+  // Self-heal: if the storage bucket hasn't been created yet, create it (public) and retry once.
+  if (uploadError && /bucket not found/i.test(uploadError.message)) {
+    await supabase.storage.createBucket(photoBucket, { public: true, fileSizeLimit: 10 * 1024 * 1024 });
+    ({ error: uploadError } = await doUpload());
+  }
 
   if (uploadError) {
     return NextResponse.json({ error: uploadError.message }, { status: 500 });
