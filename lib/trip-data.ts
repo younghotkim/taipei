@@ -20,6 +20,8 @@ export type TripStop = {
   nameZh: string;
   mrt: string;
   phrase: string;
+  /** Pinyin (with tone marks) for `phrase` — so you can actually say it. */
+  phrasePron?: string;
   /** Korean meaning of `phrase` — what you're actually saying. */
   phraseHint?: string;
   category: TripCategory;
@@ -113,6 +115,7 @@ export const tripStops: TripStop[] = [
     nameZh: "台北松山機場 (TSA)",
     mrt: "송산공항역(松山機場站) · 文湖線 BR12",
     phrase: "我要買一張悠遊卡，謝謝。",
+    phrasePron: "wǒ yào mǎi yī zhāng yōuyóukǎ, xièxie",
     phraseHint: "이지카드(悠遊卡) 한 장 주세요",
     category: "transit",
     lat: 25.0633,
@@ -126,18 +129,19 @@ export const tripStops: TripStop[] = [
     day: 1,
     date: "5/15 금",
     time: "14:30",
-    title: "시먼딩 호텔 체크인",
-    subtitle: "여행 베이스캠프",
-    nameZh: "西門町 飯店",
-    mrt: "시먼역(西門站) BL11·G12 · 1번 출구",
+    title: "미드타운 리처드슨 호텔 체크인",
+    subtitle: "여행 베이스캠프 · 西門町",
+    nameZh: "Midtown Richardson 西門館",
+    mrt: "시먼역(西門站) 1번 출구 도보 3분 · BL11",
     phrase: "你好，我有訂房，請辦理入住。",
+    phrasePron: "nǐ hǎo, wǒ yǒu dìngfáng, qǐng bànlǐ rùzhù",
     phraseHint: "안녕하세요, 예약했어요 — 체크인 부탁드려요",
     category: "hotel",
-    lat: 25.0421,
-    lng: 121.5081,
-    highlights: ["짐 풀기", "근처 동선 확인", "첫 사진 남기기"],
+    lat: 25.0427142,
+    lng: 121.5094583,
+    highlights: ["짐 풀기 (체크인 보통 15:00 — 일찍 도착하면 짐만 맡기기)", "근처 동선 — 시먼딩 전부 도보권", "첫 사진 남기기"],
     prompt: "도착해서 제일 먼저 찍은 사진이나 서로의 첫 인상을 적어두기.",
-    mapsQuery: "Ximending Taipei"
+    mapsQuery: "Midtown Richardson Hotel Ximen Taipei"
   },
   {
     id: "hot-star",
@@ -149,6 +153,7 @@ export const tripStops: TripStop[] = [
     nameZh: "豪大大雞排",
     mrt: "시먼역(西門站) 6번 출구",
     phrase: "一份雞排，不要辣，謝謝。",
+    phrasePron: "yī fèn jīpái, búyào là, xièxie",
     phraseHint: "지파이 하나, 안 맵게 해주세요",
     category: "food",
     lat: 25.0439,
@@ -167,6 +172,7 @@ export const tripStops: TripStop[] = [
     nameZh: "阿宗麵線",
     mrt: "시먼역(西門站) 6번 출구",
     phrase: "一碗大碗，加香菜。",
+    phrasePron: "yī wǎn dà wǎn, jiā xiāngcài",
     phraseHint: "큰 그릇 하나, 고수 넣어주세요",
     category: "food",
     lat: 25.0431,
@@ -185,6 +191,7 @@ export const tripStops: TripStop[] = [
     nameZh: "龍山寺",
     mrt: "룽산스역(龍山寺站) BL10",
     phrase: "請問怎麼參拜？",
+    phrasePron: "qǐngwèn zěnme cānbài?",
     phraseHint: "참배는 어떻게 하나요?",
     category: "sight",
     lat: 25.0372,
@@ -203,6 +210,7 @@ export const tripStops: TripStop[] = [
     nameZh: "臺虎 Driftwood",
     mrt: "시먼역(西門站) 1번 출구",
     phrase: "推薦一款今天的限定啤酒。",
+    phrasePron: "tuījiàn yī kuǎn jīntiān de xiàndìng píjiǔ",
     phraseHint: "오늘의 한정 맥주 하나 추천해 주세요",
     category: "beer",
     lat: 25.0438,
@@ -221,6 +229,7 @@ export const tripStops: TripStop[] = [
     nameZh: "蜂大咖啡",
     mrt: "시먼역(西門站) 6번 출구",
     phrase: "一杯熱拿鐵和核桃酥。",
+    phrasePron: "yī bēi rè nátiě hé hétáosū",
     phraseHint: "따뜻한 라떼 한 잔이랑 호두과자요",
     category: "coffee",
     lat: 25.0434,
@@ -239,6 +248,7 @@ export const tripStops: TripStop[] = [
     nameZh: "Hanko 60",
     mrt: "시먼역(西門站) 6번 출구",
     phrase: "我有預約，兩位。",
+    phrasePron: "wǒ yǒu yùyuē, liǎng wèi",
     phraseHint: "예약했어요, 두 명이요",
     category: "whisky",
     lat: 25.0436,

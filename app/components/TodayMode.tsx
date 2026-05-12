@@ -544,6 +544,9 @@ export function TodayMode({
                     title="복사"
                   >
                     <span className="quest-card__phrase-zh">{currentQuest.phrase}</span>
+                    {currentQuest.phrasePron && (
+                      <em className="quest-card__phrase-pron">{currentQuest.phrasePron}</em>
+                    )}
                     {currentQuest.phraseHint && (
                       <em className="quest-card__phrase-ko">{currentQuest.phraseHint}</em>
                     )}
@@ -641,6 +644,7 @@ export function TodayMode({
                 }}
               >
                 {nextQuest.phrase}
+                {nextQuest.phrasePron && <em className="quest-next__phrase-pron">{nextQuest.phrasePron}</em>}
                 {nextQuest.phraseHint && <em className="quest-next__phrase-ko">{nextQuest.phraseHint}</em>}
               </button>
             )}

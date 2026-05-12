@@ -124,7 +124,8 @@ export function rowToStop(row: StopRow, fallback?: TripStop): TripStop {
     nameZh: row.name_zh,
     mrt: row.mrt,
     phrase: row.phrase,
-    // not stored remotely — keep the curated Korean gloss from the default stop
+    // not stored remotely — keep the curated pinyin/Korean gloss from the default stop
+    phrasePron: fallback?.phrasePron,
     phraseHint: fallback?.phraseHint,
     category: asCategory(row.category),
     lat: row.lat,
