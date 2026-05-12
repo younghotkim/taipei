@@ -1,4 +1,4 @@
-import type { ExpenseCategory, ExpensePayer } from "./memory-types";
+import type { ExpenseCategory, ExpenseMethod, ExpensePayer } from "./memory-types";
 
 // A standalone expense ledger entry — for spending that doesn't belong to a
 // planned stop (convenience store runs, transit top-ups, random snacks, …).
@@ -8,6 +8,7 @@ export type ExpenseEntry = {
   amount: number; // TWD, integer >= 0
   category: ExpenseCategory;
   payer: ExpensePayer;
+  method: ExpenseMethod;
   label: string;
   at: string; // ISO timestamp
 };
@@ -16,6 +17,7 @@ export type ExpenseLedger = ExpenseEntry[];
 
 const CATEGORIES: ExpenseCategory[] = ["none", "food", "drink", "transport", "shopping", "ticket", "etc"];
 const PAYERS: ExpensePayer[] = ["none", "y", "s", "shared"];
+const METHODS: ExpenseMethod[] = ["unknown", "cash", "card"];
 
 export function newExpenseId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
@@ -32,6 +34,7 @@ export function normalizeExpenseEntry(value: unknown): ExpenseEntry | null {
     amount: Math.max(0, Math.round(c.amount)),
     category: CATEGORIES.includes(c.category as ExpenseCategory) ? (c.category as ExpenseCategory) : "none",
     payer: PAYERS.includes(c.payer as ExpensePayer) ? (c.payer as ExpensePayer) : "none",
+    method: METHODS.includes(c.method as ExpenseMethod) ? (c.method as ExpenseMethod) : "unknown",
     label: typeof c.label === "string" ? c.label : "",
     at: typeof c.at === "string" ? c.at : new Date().toISOString()
   };

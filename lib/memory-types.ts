@@ -19,6 +19,7 @@ export const authorInitials: Record<CommentAuthor, string> = {
 
 export type ExpenseCategory = "none" | "food" | "drink" | "transport" | "shopping" | "ticket" | "etc";
 export type ExpensePayer = "none" | "y" | "s" | "shared";
+export type ExpenseMethod = "unknown" | "cash" | "card";
 
 export const expenseCategoryLabels: Record<ExpenseCategory, string> = {
   none: "미지정",
@@ -37,6 +38,12 @@ export const expensePayerLabels: Record<ExpensePayer, string> = {
   shared: "공동"
 };
 
+export const expenseMethodLabels: Record<ExpenseMethod, string> = {
+  unknown: "수단",
+  cash: "현금",
+  card: "카드"
+};
+
 export type Memory = {
   visited: boolean;
   status: "planned" | "going" | "done" | "skipped";
@@ -50,6 +57,7 @@ export type Memory = {
   expenseAmount: number;
   expenseCategory: ExpenseCategory;
   expensePayer: ExpensePayer;
+  expenseMethod: ExpenseMethod;
   skippedReason: string;
   updatedAt?: string;
 };
@@ -82,6 +90,7 @@ export function emptyMemory(): Memory {
     expenseAmount: 0,
     expenseCategory: "none",
     expensePayer: "none",
+    expenseMethod: "unknown",
     skippedReason: ""
   };
 }
@@ -172,6 +181,12 @@ export function normalizeMemory(value: unknown): Memory {
     candidate.expensePayer === "none"
       ? candidate.expensePayer
       : base.expensePayer;
+  const expenseMethod =
+    candidate.expenseMethod === "cash" ||
+    candidate.expenseMethod === "card" ||
+    candidate.expenseMethod === "unknown"
+      ? candidate.expenseMethod
+      : base.expenseMethod;
 
   const clampStar = (v: unknown): number => {
     if (typeof v !== "number" || !Number.isFinite(v)) return 0;
@@ -195,6 +210,7 @@ export function normalizeMemory(value: unknown): Memory {
       typeof candidate.expenseAmount === "number" ? candidate.expenseAmount : base.expenseAmount,
     expenseCategory,
     expensePayer,
+    expenseMethod,
     skippedReason:
       typeof candidate.skippedReason === "string" ? candidate.skippedReason : base.skippedReason,
     updatedAt: typeof candidate.updatedAt === "string" ? candidate.updatedAt : undefined

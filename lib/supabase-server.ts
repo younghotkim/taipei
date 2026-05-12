@@ -17,6 +17,7 @@ export type TripMemoryRow = {
   expense_amount: number;
   expense_category: string;
   expense_payer: string;
+  expense_method?: string;
   skipped_reason: string;
   updated_at?: string;
 };
@@ -28,6 +29,7 @@ export type TripExpenseRow = {
   amount: number;
   category: string;
   payer: string;
+  method?: string;
   label: string;
   at: string;
 };
@@ -35,6 +37,33 @@ export type TripExpenseRow = {
 export type TripBingoRow = {
   trip_id: string;
   done: number[];
+  updated_at?: string;
+};
+
+export type TripVaultRow = {
+  trip_id: string;
+  id: string;
+  kind: string;
+  title: string;
+  provider: string;
+  confirmation: string;
+  start_at: string;
+  location: string;
+  link: string;
+  amount: number;
+  owner: string;
+  status: string;
+  notes: string;
+  document_url: string;
+  updated_at?: string;
+};
+
+export type TripBudgetRow = {
+  trip_id: string;
+  target_twd: number;
+  cash_start_twd: number;
+  daily_limit_twd: number;
+  notes: string;
   updated_at?: string;
 };
 

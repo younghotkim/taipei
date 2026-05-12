@@ -13,6 +13,7 @@ import {
   Download,
   ExternalLink,
   FileText,
+  FolderLock,
   Grid3x3,
   Import,
   ListChecks,
@@ -47,27 +48,41 @@ import {
   priorityLabels,
   type TripCategory,
   type TripDay,
+  type TripPriority,
   type TripStop,
   type StopPlanMeta
 } from "@/lib/trip-data";
 import { getPlan, newStopId, stopToRow, type StopRow } from "@/lib/itinerary";
 import { useExpenses } from "@/lib/use-expenses";
 import { useBingo } from "@/lib/use-bingo";
+import { useBudget } from "@/lib/use-budget";
+import { useVault } from "@/lib/use-vault";
+import { type BudgetSettings } from "@/lib/budget";
+import {
+  emptyVaultItem,
+  vaultKindLabels,
+  vaultOwnerLabels,
+  vaultStatusLabels,
+  type VaultItem,
+  type VaultKind
+} from "@/lib/trip-vault";
 import {
   authorLabels,
   combinedRating,
   emptyMemory,
   expenseCategoryLabels,
+  expenseMethodLabels,
   expensePayerLabels,
   getStopMemory,
   isMemoryBook,
   type ExpenseCategory,
+  type ExpenseMethod,
   type ExpensePayer,
   type Memory,
   type MemoryBook
 } from "@/lib/memory-types";
 
-type ShellMode = "plan" | "today" | "bingo" | "memories" | "ledger" | "recap";
+type ShellMode = "plan" | "today" | "bingo" | "vault" | "memories" | "ledger" | "recap";
 type PlanView = "list" | "map" | "edit";
 type MemoryView = "list" | "edit";
 type SyncStatus = "local" | "loading" | "synced" | "saving" | "offline" | "error";
@@ -132,6 +147,7 @@ function isShellMode(value: string | null): value is ShellMode {
     value === "plan" ||
     value === "today" ||
     value === "bingo" ||
+    value === "vault" ||
     value === "memories" ||
     value === "ledger" ||
     value === "recap"
@@ -162,6 +178,7 @@ const modeLabels: Record<ShellMode, string> = {
   plan: "일정",
   today: "오늘",
   bingo: "빙고",
+  vault: "보관함",
   ledger: "가계부",
   memories: "기록",
   recap: "회고"
@@ -171,6 +188,7 @@ const modeIcons: Record<ShellMode, React.ReactNode> = {
   plan: <MapIcon size={16} />,
   today: <Sun size={16} />,
   bingo: <Grid3x3 size={16} />,
+  vault: <FolderLock size={16} />,
   ledger: <Wallet size={16} />,
   memories: <FileText size={16} />,
   recap: <BarChart3 size={16} />
@@ -199,6 +217,8 @@ function HomeShell() {
   const fallbackStopId = tripStops[0]?.id ?? "";
   const expenses = useExpenses();
   const bingo = useBingo();
+  const budget = useBudget();
+  const vault = useVault();
 
   const [mode, setMode] = useState<ShellMode>("plan");
   const [planView, setPlanView] = useState<PlanView>("list");
@@ -310,7 +330,9 @@ function HomeShell() {
     void itinerary.refresh();
     void expenses.refresh();
     void bingo.refresh();
-  }, [loadRemoteMemories, itinerary, expenses, bingo]);
+    void budget.refresh();
+    void vault.refresh();
+  }, [loadRemoteMemories, itinerary, expenses, bingo, budget, vault]);
 
   const selectDay = (day: number) => {
     setActiveDay(day);
@@ -581,6 +603,7 @@ function HomeShell() {
           onMoveStopToDay={moveStopToDay}
           onSaveStopFull={saveStopFull}
           onSaveDay={itinerary.saveDay}
+          onSavePlan={itinerary.savePlan}
           planView={planView}
           onPlanViewChange={setPlanView}
         />
@@ -621,10 +644,20 @@ function HomeShell() {
 
       {mode === "bingo" && <BingoMode done={bingo.done} onToggle={bingo.toggle} />}
 
+      {mode === "vault" && (
+        <VaultMode
+          items={vault.items}
+          onUpsert={vault.upsert}
+          onRemove={vault.remove}
+        />
+      )}
+
       {mode === "ledger" && (
         <LedgerMode
           memoryBook={memoryBook}
           ledger={expenses.entries}
+          budget={budget.settings}
+          onSaveBudget={budget.save}
           todayTripDay={isoDayMap[todayIso()] ?? null}
           onAdd={expenses.addEntry}
           onRemove={expenses.removeEntry}
@@ -674,6 +707,7 @@ function PlanShell({
   onMoveStopToDay,
   onSaveStopFull,
   onSaveDay,
+  onSavePlan,
   planView,
   onPlanViewChange
 }: {
@@ -698,6 +732,7 @@ function PlanShell({
   onMoveStopToDay: (stopId: string, day: number) => void;
   onSaveStopFull: (stop: TripStop, plan: StopPlanMeta, sortOrder: number) => Promise<boolean>;
   onSaveDay: (day: TripDay, sortOrder: number) => Promise<boolean>;
+  onSavePlan: (stopId: string, plan: StopPlanMeta) => Promise<boolean>;
   planView: PlanView;
   onPlanViewChange: (view: PlanView) => void;
 }) {
@@ -826,6 +861,18 @@ function PlanShell({
                         <strong>{stop.time || "—"} {stop.title}</strong>
                         <small>{priorityLabels[plan.priority]} · {plan.durationMinutes}분 · {categoryLabels[stop.category]}</small>
                       </button>
+                      <select
+                        className="stop-row__priority"
+                        value={plan.priority}
+                        onChange={(event) => {
+                          void onSavePlan(stop.id, { ...plan, priority: event.target.value as TripPriority });
+                        }}
+                        title="우선순위"
+                      >
+                        {(Object.keys(priorityLabels) as TripPriority[]).map((priority) => (
+                          <option key={priority} value={priority}>{priorityLabels[priority]}</option>
+                        ))}
+                      </select>
                       <button className="stop-row__archive" onClick={() => onArchiveStop(stop.id)} title="제거">
                         <Trash2 size={13} />
                       </button>
@@ -853,6 +900,9 @@ function PlanShell({
                           <strong>{stop.title}</strong>
                           <small>
                             {priorityLabels[plan.priority]} · {plan.durationMinutes}분 · {statusLabels[memory.status]}
+                            {plan.openingHours && ` · ${plan.openingHours}`}
+                            {plan.bookingStatus && ` · ${plan.bookingStatus}`}
+                            {plan.riskLevel && plan.riskLevel !== "low" && ` · ${plan.riskLevel === "high" ? "리스크 높음" : "주의"}`}
                             {memory.comments.length > 0 && ` · 💬${memory.comments.length}`}
                           </small>
                         </span>
@@ -1095,6 +1145,172 @@ function MemoriesShell({
   );
 }
 
+function VaultMode({
+  items,
+  onUpsert,
+  onRemove
+}: {
+  items: VaultItem[];
+  onUpsert: (item: VaultItem) => void;
+  onRemove: (id: string) => void;
+}) {
+  const [draft, setDraft] = useState<VaultItem>(() => emptyVaultItem());
+  const [filter, setFilter] = useState<VaultKind | "all">("all");
+  const filtered = items
+    .filter((item) => filter === "all" || item.kind === filter)
+    .slice()
+    .sort((a, b) => (a.startAt || "9999").localeCompare(b.startAt || "9999"));
+  const pendingCount = items.filter((item) => item.status === "pending").length;
+  const totalReservationAmount = items.reduce((sum, item) => sum + item.amount, 0);
+
+  const updateDraft = <K extends keyof VaultItem>(key: K, value: VaultItem[K]) => {
+    setDraft((current) => ({ ...current, [key]: value }));
+  };
+
+  const submit = () => {
+    if (!draft.title.trim()) return;
+    onUpsert({ ...draft, title: draft.title.trim() });
+    setDraft(emptyVaultItem());
+  };
+
+  return (
+    <section className="vault-stage">
+      <header className="vault-head">
+        <div>
+          <span><FolderLock size={13} /> 예약·문서 보관함</span>
+          <h1>중요 정보</h1>
+          <p>항공권, 숙소, 카발란 예약, eSIM, 보험, 문서 링크를 한 곳에 모읍니다.</p>
+        </div>
+        <div className="vault-stats">
+          <div><span>항목</span><strong>{items.length}</strong></div>
+          <div><span>확인 필요</span><strong>{pendingCount}</strong></div>
+          <div><span>예약금</span><strong>TWD {totalReservationAmount.toLocaleString()}</strong></div>
+        </div>
+      </header>
+
+      <section className="vault-add">
+        <div className="vault-add__grid">
+          <label className="field">
+            <span>종류</span>
+            <select value={draft.kind} onChange={(e) => updateDraft("kind", e.target.value as VaultKind)}>
+              {(Object.keys(vaultKindLabels) as VaultKind[]).map((kind) => (
+                <option key={kind} value={kind}>{vaultKindLabels[kind]}</option>
+              ))}
+            </select>
+          </label>
+          <label className="field field--wide">
+            <span>제목</span>
+            <input value={draft.title} onChange={(e) => updateDraft("title", e.target.value)} placeholder="예: 카발란 투어 예약" />
+          </label>
+          <label className="field">
+            <span>일시</span>
+            <input type="datetime-local" value={draft.startAt} onChange={(e) => updateDraft("startAt", e.target.value)} />
+          </label>
+        </div>
+        <div className="vault-add__grid">
+          <label className="field">
+            <span>업체/앱</span>
+            <input value={draft.provider} onChange={(e) => updateDraft("provider", e.target.value)} placeholder="Booking, KKday, 항공사" />
+          </label>
+          <label className="field">
+            <span>예약번호</span>
+            <input value={draft.confirmation} onChange={(e) => updateDraft("confirmation", e.target.value)} />
+          </label>
+          <label className="field">
+            <span>담당</span>
+            <select value={draft.owner} onChange={(e) => updateDraft("owner", e.target.value as VaultItem["owner"])}>
+              {(Object.keys(vaultOwnerLabels) as VaultItem["owner"][]).map((owner) => (
+                <option key={owner} value={owner}>{vaultOwnerLabels[owner]}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <div className="vault-add__grid">
+          <label className="field">
+            <span>상태</span>
+            <select value={draft.status} onChange={(e) => updateDraft("status", e.target.value as VaultItem["status"])}>
+              {(Object.keys(vaultStatusLabels) as VaultItem["status"][]).map((status) => (
+                <option key={status} value={status}>{vaultStatusLabels[status]}</option>
+              ))}
+            </select>
+          </label>
+          <label className="field">
+            <span>금액 TWD</span>
+            <input
+              inputMode="numeric"
+              value={draft.amount ? String(draft.amount) : ""}
+              onChange={(e) => updateDraft("amount", Number(e.target.value.replace(/[^0-9]/g, "")) || 0)}
+            />
+          </label>
+          <label className="field field--wide">
+            <span>장소</span>
+            <input value={draft.location} onChange={(e) => updateDraft("location", e.target.value)} />
+          </label>
+        </div>
+        <label className="field">
+          <span>예약/문서 링크</span>
+          <input value={draft.link} onChange={(e) => updateDraft("link", e.target.value)} placeholder="예약 페이지, PDF, Google Drive, 메일 링크" />
+        </label>
+        <label className="field">
+          <span>메모</span>
+          <textarea value={draft.notes} onChange={(e) => updateDraft("notes", e.target.value)} placeholder="체크인 조건, 준비물, 취소 규정, 현장 제시 방법" />
+        </label>
+        <button className="wide-link wide-link--primary" onClick={submit} disabled={!draft.title.trim()}>
+          <Save size={16} />
+          보관
+        </button>
+      </section>
+
+      <div className="category-strip category-strip--vault">
+        <button className={filter === "all" ? "filter-chip filter-chip--active" : "filter-chip"} onClick={() => setFilter("all")}>전체</button>
+        {(Object.keys(vaultKindLabels) as VaultKind[]).map((kind) => (
+          <button key={kind} className={filter === kind ? "filter-chip filter-chip--active" : "filter-chip"} onClick={() => setFilter(kind)}>
+            {vaultKindLabels[kind]}
+          </button>
+        ))}
+      </div>
+
+      <section className="vault-list">
+        {filtered.length === 0 && <div className="empty-state">아직 보관한 예약/문서가 없습니다.</div>}
+        {filtered.map((item) => (
+          <article key={item.id} className={`vault-card vault-card--${item.status}`}>
+            <header>
+              <span>{vaultKindLabels[item.kind]}</span>
+              <strong>{item.title}</strong>
+              <em>{vaultStatusLabels[item.status]}</em>
+            </header>
+            <div className="vault-card__meta">
+              {item.startAt && <span>{item.startAt.replace("T", " ")}</span>}
+              {item.provider && <span>{item.provider}</span>}
+              {item.confirmation && <span>예약번호 {item.confirmation}</span>}
+              <span>{vaultOwnerLabels[item.owner]}</span>
+              {item.amount > 0 && <span>TWD {item.amount.toLocaleString()}</span>}
+            </div>
+            {item.location && <p>{item.location}</p>}
+            {item.notes && <p>{item.notes}</p>}
+            <div className="vault-card__actions">
+              {item.link && (
+                <a href={item.link} target="_blank" rel="noreferrer">
+                  <ExternalLink size={14} />
+                  열기
+                </a>
+              )}
+              <button onClick={() => setDraft(item)}>
+                <Pencil size={14} />
+                수정
+              </button>
+              <button onClick={() => onRemove(item.id)}>
+                <Trash2 size={14} />
+                삭제
+              </button>
+            </div>
+          </article>
+        ))}
+      </section>
+    </section>
+  );
+}
+
 function SyncChip({
   status,
   onRefresh
@@ -1200,7 +1416,7 @@ function MemoryEditor({
           placeholder="Google Photos, iCloud, Instagram 링크 (선택)"
         />
       </label>
-      <div className="expense-row expense-row--three">
+      <div className="expense-row expense-row--four">
         <label className="field">
           <span>지출 TWD</span>
           <input
@@ -1238,6 +1454,19 @@ function MemoryEditor({
             {(Object.keys(expensePayerLabels) as ExpensePayer[]).map((payer) => (
               <option key={payer} value={payer}>
                 {payer === "none" ? "미지정" : expensePayerLabels[payer]}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="field">
+          <span>수단</span>
+          <select
+            value={memory.expenseMethod}
+            onChange={(event) => onChange({ expenseMethod: event.target.value as ExpenseMethod })}
+          >
+            {(Object.keys(expenseMethodLabels) as ExpenseMethod[]).map((method) => (
+              <option key={method} value={method}>
+                {expenseMethodLabels[method]}
               </option>
             ))}
           </select>

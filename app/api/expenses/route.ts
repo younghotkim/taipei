@@ -16,6 +16,7 @@ function rowToEntry(row: Partial<TripExpenseRow>): ExpenseEntry | null {
     amount: row.amount,
     category: row.category,
     payer: row.payer,
+    method: row.method,
     label: row.label,
     at: row.at
   });
@@ -29,6 +30,7 @@ function entryToRow(e: ExpenseEntry): TripExpenseRow {
     amount: e.amount,
     category: e.category,
     payer: e.payer,
+    method: e.method,
     label: e.label,
     at: e.at
   };

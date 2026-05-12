@@ -16,6 +16,8 @@ create table if not exists public.trip_memories (
     check (expense_category in ('none', 'food', 'drink', 'transport', 'shopping', 'ticket', 'etc')),
   expense_payer text not null default 'none'
     check (expense_payer in ('none', 'y', 's', 'shared')),
+  expense_method text not null default 'unknown'
+    check (expense_method in ('unknown', 'cash', 'card')),
   skipped_reason text not null default '',
   updated_at timestamptz not null default now(),
   primary key (trip_id, stop_id)
@@ -39,3 +41,4 @@ alter table public.trip_memories add column if not exists skipped_reason text no
 alter table public.trip_memories add column if not exists photos text[] not null default '{}';
 alter table public.trip_memories add column if not exists expense_payer text not null default 'none';
 alter table public.trip_memories add column if not exists comments jsonb not null default '[]'::jsonb;
+alter table public.trip_memories add column if not exists expense_method text not null default 'unknown';

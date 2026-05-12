@@ -69,6 +69,10 @@ export type StopPlanRow = {
   duration_minutes: number;
   alternatives: string[];
   flex_tip: string;
+  opening_hours?: string;
+  booking_status?: string;
+  risk_level?: string;
+  risk_note?: string;
   updated_at?: string;
 };
 
@@ -174,11 +178,19 @@ export function dayToRow(day: TripDay, tripId: string, sortOrder: number): DayRo
 }
 
 export function rowToPlan(row: StopPlanRow): StopPlanMeta {
+  const riskLevel =
+    row.risk_level === "medium" || row.risk_level === "high" || row.risk_level === "low"
+      ? row.risk_level
+      : "low";
   return {
     priority: asPriority(row.priority),
     durationMinutes: row.duration_minutes,
     alternatives: row.alternatives ?? [],
-    flexTip: row.flex_tip
+    flexTip: row.flex_tip,
+    openingHours: row.opening_hours ?? "",
+    bookingStatus: row.booking_status ?? "",
+    riskLevel,
+    riskNote: row.risk_note ?? ""
   };
 }
 
@@ -189,7 +201,11 @@ export function planToRow(stopId: string, plan: StopPlanMeta, tripId: string): S
     priority: plan.priority,
     duration_minutes: plan.durationMinutes,
     alternatives: plan.alternatives,
-    flex_tip: plan.flexTip
+    flex_tip: plan.flexTip,
+    opening_hours: plan.openingHours ?? "",
+    booking_status: plan.bookingStatus ?? "",
+    risk_level: plan.riskLevel ?? "low",
+    risk_note: plan.riskNote ?? ""
   };
 }
 
@@ -313,7 +329,11 @@ export function getPlan(plans: Record<string, StopPlanMeta>, stopId: string): St
       priority: "optional",
       durationMinutes: 60,
       alternatives: [],
-      flexTip: ""
+      flexTip: "",
+      openingHours: "",
+      bookingStatus: "",
+      riskLevel: "low",
+      riskNote: ""
     }
   );
 }

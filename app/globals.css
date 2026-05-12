@@ -2075,6 +2075,74 @@ a {
   letter-spacing: 0.04em;
 }
 
+.ledger-budget {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid rgba(54, 255, 179, 0.22);
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, rgba(54, 255, 179, 0.08), rgba(0, 232, 255, 0.04)),
+    rgba(14, 6, 36, 0.82);
+}
+
+.ledger-budget header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ledger-budget header strong {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.ledger-budget header span {
+  color: var(--neon-mint);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.ledger-budget__bar {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.ledger-budget__bar > div {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--neon-mint), var(--neon-cyan));
+}
+
+.ledger-budget__grid,
+.vault-add__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ledger-budget__stats,
+.vault-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ledger-budget__stats span,
+.vault-stats div {
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(20, 9, 46, 0.6);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
 .ledger-add {
   display: grid;
   gap: 8px;
@@ -2135,7 +2203,7 @@ a {
 
 .ledger-add__selects {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
 }
 
@@ -2295,6 +2363,165 @@ a {
 
 .ledger-row__del:hover { border-color: var(--neon-pink); color: var(--neon-pink); }
 .ledger-row__go:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+
+/* ============================== 보관함 (VAULT) ============================== */
+.vault-stage {
+  display: grid;
+  gap: 16px;
+}
+
+.vault-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.8fr);
+  gap: 16px;
+  align-items: end;
+}
+
+.vault-head span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--neon-cyan);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.vault-head h1 {
+  font-family: Bungee, Inter, sans-serif;
+  font-size: clamp(22px, 5vw, 30px);
+  margin: 6px 0 4px;
+  color: #fff;
+}
+
+.vault-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.vault-stats div {
+  display: grid;
+  gap: 2px;
+}
+
+.vault-stats strong {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.vault-add {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid rgba(0, 232, 255, 0.2);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(0, 232, 255, 0.05), transparent),
+    rgba(14, 6, 36, 0.84);
+}
+
+.vault-add .field--wide {
+  grid-column: span 1;
+}
+
+.category-strip--vault {
+  margin: 0;
+}
+
+.vault-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.vault-card {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-left: 3px solid var(--neon-cyan);
+  border-radius: 14px;
+  background: rgba(20, 9, 46, 0.72);
+}
+
+.vault-card--pending {
+  border-left-color: var(--neon-gold);
+}
+
+.vault-card--cancelled {
+  opacity: 0.68;
+  border-left-color: var(--muted);
+}
+
+.vault-card header {
+  display: grid;
+  gap: 4px;
+}
+
+.vault-card header span,
+.vault-card header em {
+  width: fit-content;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: rgba(0, 232, 255, 0.1);
+  color: var(--neon-cyan);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.vault-card header strong {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.vault-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.vault-card__meta span {
+  padding: 4px 7px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.vault-card p {
+  margin: 0;
+  color: var(--muted-dim);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.vault-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.vault-card__actions a,
+.vault-card__actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9px;
+  background: rgba(26, 12, 56, 0.7);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-decoration: none;
+}
 
 /* ============================== 빙고 (BINGO) ============================== */
 .bingo-stage {
@@ -3119,7 +3346,7 @@ a {
 
 .stop-row--edit {
   display: grid;
-  grid-template-columns: 28px minmax(0, 1fr) 28px;
+  grid-template-columns: 28px minmax(0, 1fr) 82px 28px;
   gap: 10px;
   align-items: center;
   padding: 10px 12px;
@@ -3195,6 +3422,18 @@ a {
 
 .stop-row__archive:hover {
   background: rgba(255, 61, 77, 0.22);
+}
+
+.stop-row__priority {
+  min-width: 0;
+  height: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(8, 4, 28, 0.62);
+  color: var(--muted);
+  padding: 0 7px;
+  font-size: 11px;
+  font-weight: 900;
 }
 
 .stop-add {
@@ -3406,6 +3645,10 @@ a {
 
 .expense-row--three {
   grid-template-columns: 1fr 1fr 1fr;
+}
+
+.expense-row--four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 /* ============================== RECAP SETTLE ============================== */
@@ -5109,12 +5352,22 @@ a {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .ledger-budget__grid,
+  .ledger-budget__stats,
+  .vault-head,
+  .vault-stats,
+  .vault-add__grid,
+  .vault-list {
+    grid-template-columns: 1fr;
+  }
+
   .ledger-cat {
     grid-template-columns: 92px 1fr 64px;
     gap: 8px;
   }
 
   .ledger-add__selects {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
   }
 
@@ -5125,6 +5378,10 @@ a {
   }
 
   .expense-row--three {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .expense-row--four {
     grid-template-columns: 1fr 1fr;
   }
 

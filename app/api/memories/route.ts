@@ -50,6 +50,7 @@ function rowToMemory(row: Partial<TripMemoryRow>) {
     expenseAmount: row.expense_amount,
     expenseCategory: row.expense_category,
     expensePayer: row.expense_payer,
+    expenseMethod: row.expense_method,
     skippedReason: row.skipped_reason,
     updatedAt: row.updated_at
   });
@@ -73,6 +74,7 @@ function memoryToRow(stopId: string, memory: Memory): TripMemoryRow {
     expense_amount: memory.expenseAmount,
     expense_category: memory.expenseCategory,
     expense_payer: memory.expensePayer,
+    expense_method: memory.expenseMethod,
     skipped_reason: memory.skippedReason,
     updated_at: memory.updatedAt ?? new Date().toISOString()
   };

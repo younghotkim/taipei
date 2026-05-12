@@ -33,6 +33,10 @@ export type StopPlanMeta = {
   durationMinutes: number;
   alternatives: string[];
   flexTip: string;
+  openingHours?: string;
+  bookingStatus?: string;
+  riskLevel?: "low" | "medium" | "high";
+  riskNote?: string;
 };
 
 export type TripDay = {
@@ -647,10 +651,14 @@ export const stopPlanMeta: Record<string, StopPlanMeta> = {
 export function getStopPlan(stopId: string): StopPlanMeta {
   return (
     stopPlanMeta[stopId] ?? {
-      priority: "optional",
-      durationMinutes: 60,
-      alternatives: ["근처 카페 휴식", "다음 일정으로 바로 이동"],
-      flexTip: "현장 컨디션에 따라 체류 시간을 조정."
+    priority: "optional",
+    durationMinutes: 60,
+    alternatives: ["근처 카페 휴식", "다음 일정으로 바로 이동"],
+      flexTip: "현장 컨디션에 따라 체류 시간을 조정.",
+      openingHours: "",
+      bookingStatus: "",
+      riskLevel: "low",
+      riskNote: ""
     }
   );
 }

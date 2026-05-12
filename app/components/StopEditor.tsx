@@ -29,6 +29,10 @@ type StopForm = {
   durationMinutes: string;
   alternatives: string;
   flexTip: string;
+  openingHours: string;
+  bookingStatus: string;
+  riskLevel: "low" | "medium" | "high";
+  riskNote: string;
 };
 
 function toForm(stop: TripStop, plan: StopPlanMeta): StopForm {
@@ -48,7 +52,11 @@ function toForm(stop: TripStop, plan: StopPlanMeta): StopForm {
     priority: plan.priority,
     durationMinutes: String(plan.durationMinutes),
     alternatives: plan.alternatives.join(", "),
-    flexTip: plan.flexTip
+    flexTip: plan.flexTip,
+    openingHours: plan.openingHours ?? "",
+    bookingStatus: plan.bookingStatus ?? "",
+    riskLevel: plan.riskLevel ?? "low",
+    riskNote: plan.riskNote ?? ""
   };
 }
 
@@ -78,7 +86,11 @@ function fromForm(stop: TripStop, form: StopForm): { stop: TripStop; plan: StopP
       priority: form.priority,
       durationMinutes: Number(form.durationMinutes) || 0,
       alternatives: splitList(form.alternatives),
-      flexTip: form.flexTip.trim()
+      flexTip: form.flexTip.trim(),
+      openingHours: form.openingHours.trim(),
+      bookingStatus: form.bookingStatus.trim(),
+      riskLevel: form.riskLevel,
+      riskNote: form.riskNote.trim()
     }
   };
 }
@@ -273,6 +285,32 @@ export function StopEditor({
         <span>현장 조정 팁</span>
         <textarea value={form.flexTip} onChange={(e) => update("flexTip", e.target.value)} rows={2} />
       </label>
+
+      <div className="stop-editor__grid">
+        <label className="field">
+          <span>영업시간</span>
+          <input value={form.openingHours} onChange={(e) => update("openingHours", e.target.value)} placeholder="예: 11:00-21:30 / 월 휴무" />
+        </label>
+        <label className="field">
+          <span>예약/티켓</span>
+          <input value={form.bookingStatus} onChange={(e) => update("bookingStatus", e.target.value)} placeholder="예: 예약 완료, 현장 대기" />
+        </label>
+      </div>
+
+      <div className="stop-editor__grid">
+        <label className="field">
+          <span>리스크</span>
+          <select value={form.riskLevel} onChange={(e) => update("riskLevel", e.target.value as StopForm["riskLevel"])}>
+            <option value="low">낮음</option>
+            <option value="medium">주의</option>
+            <option value="high">높음</option>
+          </select>
+        </label>
+        <label className="field field--wide">
+          <span>리스크 메모</span>
+          <input value={form.riskNote} onChange={(e) => update("riskNote", e.target.value)} placeholder="예: 웨이팅 길면 대체, 라스트오더 확인" />
+        </label>
+      </div>
 
       <label className="field">
         <span>Google Maps 검색어</span>

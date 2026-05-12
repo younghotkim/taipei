@@ -5,13 +5,16 @@ import { Plus, Trash2, Wallet } from "lucide-react";
 import { type TripStop } from "@/lib/trip-data";
 import {
   expenseCategoryLabels,
+  expenseMethodLabels,
   expensePayerLabels,
   getStopMemory,
   type ExpenseCategory,
+  type ExpenseMethod,
   type ExpensePayer,
   type MemoryBook
 } from "@/lib/memory-types";
 import { type ExpenseEntry } from "@/lib/expense-ledger";
+import { type BudgetSettings } from "@/lib/budget";
 import { useItineraryContext } from "./ItineraryContext";
 import { TwdKrwLabel } from "./ExpenseDashboard";
 
@@ -33,6 +36,7 @@ type LedgerRow =
       amount: number;
       category: ExpenseCategory;
       payer: ExpensePayer;
+      method: ExpenseMethod;
       label: string;
       at: string;
     }
@@ -43,6 +47,7 @@ type LedgerRow =
       amount: number;
       category: ExpenseCategory;
       payer: ExpensePayer;
+      method: ExpenseMethod;
       label: string;
       time: string;
       stop: TripStop;
@@ -57,15 +62,19 @@ function hhmm(iso: string): string {
 export function LedgerMode({
   memoryBook,
   ledger,
+  budget,
   todayTripDay,
   onAdd,
+  onSaveBudget,
   onRemove,
   onSelectStop
 }: {
   memoryBook: MemoryBook;
   ledger: ExpenseEntry[];
+  budget: BudgetSettings;
   todayTripDay: number | null;
-  onAdd: (data: { day: number; amount: number; category: ExpenseCategory; payer: ExpensePayer; label: string }) => void;
+  onAdd: (data: { day: number; amount: number; category: ExpenseCategory; payer: ExpensePayer; method: ExpenseMethod; label: string }) => void;
+  onSaveBudget: (settings: BudgetSettings) => void;
   onRemove: (id: string) => void;
   onSelectStop: (stop: TripStop) => void;
 }) {
@@ -76,13 +85,14 @@ export function LedgerMode({
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState<ExpenseCategory>("food");
   const [payer, setPayer] = useState<ExpensePayer>("shared");
+  const [method, setMethod] = useState<ExpenseMethod>("cash");
   const [label, setLabel] = useState("");
   const [day, setDay] = useState<number>(todayTripDay ?? tripDays[0]?.day ?? 1);
 
   function submit() {
     const n = Number(amount.replace(/[^0-9]/g, ""));
     if (!n) return;
-    onAdd({ day, amount: n, category, payer, label: label.trim() });
+    onAdd({ day, amount: n, category, payer, method, label: label.trim() });
     setAmount("");
     setLabel("");
   }
@@ -97,6 +107,7 @@ export function LedgerMode({
       amount: m.expenseAmount,
       category: m.expenseCategory,
       payer: m.expensePayer,
+      method: m.expenseMethod,
       label: stop.title,
       time: stop.time,
       stop
@@ -105,6 +116,10 @@ export function LedgerMode({
   const allRows: LedgerRow[] = [...stopRows, ...ledgerRows];
 
   const total = allRows.reduce((s, r) => s + r.amount, 0);
+  const cashSpent = allRows.filter((r) => r.method === "cash").reduce((s, r) => s + r.amount, 0);
+  const cardSpent = allRows.filter((r) => r.method === "card").reduce((s, r) => s + r.amount, 0);
+  const budgetUsedPct = budget.targetTwd > 0 ? Math.min(100, Math.round((total / budget.targetTwd) * 100)) : 0;
+  const cashLeft = Math.max(0, budget.cashStartTwd - cashSpent);
   const split = allRows.reduce(
     (acc, r) => {
       if (r.payer === "y") acc.y += r.amount;
@@ -166,6 +181,48 @@ export function LedgerMode({
         <div className="ledger-summary__settle">정산 — {settle}</div>
       </section>
 
+      <section className="ledger-budget">
+        <header>
+          <strong>예산 목표</strong>
+          <span>{budget.targetTwd > 0 ? `${budgetUsedPct}% 사용` : "목표 미설정"}</span>
+        </header>
+        <div className="ledger-budget__bar">
+          <div style={{ width: `${budgetUsedPct}%` }} />
+        </div>
+        <div className="ledger-budget__grid">
+          <label className="field">
+            <span>총 예산 TWD</span>
+            <input
+              inputMode="numeric"
+              value={budget.targetTwd ? String(budget.targetTwd) : ""}
+              onChange={(e) => onSaveBudget({ ...budget, targetTwd: Number(e.target.value.replace(/[^0-9]/g, "")) || 0 })}
+            />
+          </label>
+          <label className="field">
+            <span>시작 현금 TWD</span>
+            <input
+              inputMode="numeric"
+              value={budget.cashStartTwd ? String(budget.cashStartTwd) : ""}
+              onChange={(e) => onSaveBudget({ ...budget, cashStartTwd: Number(e.target.value.replace(/[^0-9]/g, "")) || 0 })}
+            />
+          </label>
+          <label className="field">
+            <span>일일 목표 TWD</span>
+            <input
+              inputMode="numeric"
+              value={budget.dailyLimitTwd ? String(budget.dailyLimitTwd) : ""}
+              onChange={(e) => onSaveBudget({ ...budget, dailyLimitTwd: Number(e.target.value.replace(/[^0-9]/g, "")) || 0 })}
+            />
+          </label>
+        </div>
+        <div className="ledger-budget__stats">
+          <span>남은 예산 TWD {Math.max(0, budget.targetTwd - total).toLocaleString()}</span>
+          <span>현금 사용 TWD {cashSpent.toLocaleString()}</span>
+          <span>현금 잔액 TWD {cashLeft.toLocaleString()}</span>
+          <span>카드 TWD {cardSpent.toLocaleString()}</span>
+        </div>
+      </section>
+
       <section className="ledger-add">
         <div className="ledger-add__main">
           <input
@@ -212,6 +269,13 @@ export function LedgerMode({
                   {expensePayerLabels[p]}
                 </option>
               ))}
+          </select>
+          <select value={method} onChange={(e) => setMethod(e.target.value as ExpenseMethod)} aria-label="결제 수단">
+            {(Object.keys(expenseMethodLabels) as ExpenseMethod[]).map((m) => (
+              <option key={m} value={m}>
+                {expenseMethodLabels[m]}
+              </option>
+            ))}
           </select>
           <select value={day} onChange={(e) => setDay(Number(e.target.value))} aria-label="날짜">
             {tripDays.map((d) => (
@@ -265,6 +329,8 @@ export function LedgerMode({
                       {r.kind === "stop" ? `${r.time || "—"} · 스톱` : hhmm(r.at) || "—"}
                       {" · "}
                       {r.payer === "none" ? "결제자 미지정" : expensePayerLabels[r.payer]}
+                      {" · "}
+                      {expenseMethodLabels[r.method]}
                     </small>
                   </div>
                   <span className="ledger-row__amt">{r.amount.toLocaleString()}</span>

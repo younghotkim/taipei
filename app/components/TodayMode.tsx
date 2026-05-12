@@ -34,11 +34,13 @@ import {
   authorLabels,
   combinedRating,
   expenseCategoryLabels,
+  expenseMethodLabels,
   expensePayerLabels,
   getStopMemory,
   newCommentId,
   type CommentAuthor,
   type ExpenseCategory,
+  type ExpenseMethod,
   type ExpensePayer,
   type Memory,
   type MemoryBook
@@ -191,6 +193,15 @@ function CompactCapture({
         >
           {(Object.keys(expensePayerLabels) as ExpensePayer[]).map((p) => (
             <option key={p} value={p}>{p === "none" ? "결제자" : expensePayerLabels[p]}</option>
+          ))}
+        </select>
+        <select
+          value={memory.expenseMethod}
+          onChange={(e) => onChange({ expenseMethod: e.target.value as ExpenseMethod })}
+          aria-label="결제 수단"
+        >
+          {(Object.keys(expenseMethodLabels) as ExpenseMethod[]).map((m) => (
+            <option key={m} value={m}>{expenseMethodLabels[m]}</option>
           ))}
         </select>
       </div>

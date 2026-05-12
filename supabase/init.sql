@@ -27,6 +27,8 @@ create table if not exists public.trip_memories (
     check (expense_category in ('none', 'food', 'drink', 'transport', 'shopping', 'ticket', 'etc')),
   expense_payer text not null default 'none'
     check (expense_payer in ('none', 'y', 's', 'shared')),
+  expense_method text not null default 'unknown'
+    check (expense_method in ('unknown', 'cash', 'card')),
   skipped_reason text not null default '',
   updated_at timestamptz not null default now(),
   primary key (trip_id, stop_id)
@@ -47,6 +49,7 @@ alter table public.trip_memories add column if not exists expense_category text 
 alter table public.trip_memories add column if not exists skipped_reason text not null default '';
 alter table public.trip_memories add column if not exists photos text[] not null default '{}';
 alter table public.trip_memories add column if not exists expense_payer text not null default 'none';
+alter table public.trip_memories add column if not exists expense_method text not null default 'unknown';
 alter table public.trip_memories add column if not exists comments jsonb not null default '[]'::jsonb;
 alter table public.trip_memories add column if not exists rating_y integer not null default 0;
 alter table public.trip_memories add column if not exists rating_s integer not null default 0;
@@ -115,11 +118,21 @@ create table if not exists public.trip_stop_plans (
   duration_minutes integer not null default 60 check (duration_minutes >= 0),
   alternatives text[] not null default '{}',
   flex_tip text not null default '',
+  opening_hours text not null default '',
+  booking_status text not null default '',
+  risk_level text not null default 'low'
+    check (risk_level in ('low', 'medium', 'high')),
+  risk_note text not null default '',
   updated_at timestamptz not null default now(),
   primary key (trip_id, stop_id)
 );
 
 alter table public.trip_stop_plans enable row level security;
+
+alter table public.trip_stop_plans add column if not exists opening_hours text not null default '';
+alter table public.trip_stop_plans add column if not exists booking_status text not null default '';
+alter table public.trip_stop_plans add column if not exists risk_level text not null default 'low';
+alter table public.trip_stop_plans add column if not exists risk_note text not null default '';
 
 -- ---------------------------------------------------------------------------
 -- 5. trip_essentials — 준비 체크리스트 (항목 + 체크 상태)
@@ -152,6 +165,7 @@ create table if not exists public.trip_expenses (
   amount integer not null default 0 check (amount >= 0),
   category text not null default 'none',
   payer text not null default 'none',
+  method text not null default 'unknown',
   label text not null default '',
   at timestamptz not null default now(),
   primary key (trip_id, id)
@@ -162,6 +176,8 @@ create index if not exists trip_expenses_trip_idx
 
 alter table public.trip_expenses enable row level security;
 -- writes go through the Next.js server route with the service-role key
+
+alter table public.trip_expenses add column if not exists method text not null default 'unknown';
 
 -- ---------------------------------------------------------------------------
 -- 7. trip_bingo — 여행 빙고 보드 (완료한 칸 인덱스 목록)
@@ -177,7 +193,50 @@ alter table public.trip_bingo enable row level security;
 -- writes go through the Next.js server route with the service-role key
 
 -- ---------------------------------------------------------------------------
--- 8. Storage bucket — 사진 업로드 (PhotoUploader 컴포넌트가 사용)
+-- 8. trip_vault — 예약/문서 보관함
+-- ---------------------------------------------------------------------------
+
+create table if not exists public.trip_vault (
+  trip_id text not null,
+  id text not null,
+  kind text not null default 'other',
+  title text not null default '',
+  provider text not null default '',
+  confirmation text not null default '',
+  start_at text not null default '',
+  location text not null default '',
+  link text not null default '',
+  amount integer not null default 0 check (amount >= 0),
+  owner text not null default 'shared',
+  status text not null default 'confirmed',
+  notes text not null default '',
+  document_url text not null default '',
+  updated_at timestamptz not null default now(),
+  primary key (trip_id, id)
+);
+
+create index if not exists trip_vault_trip_start_idx
+  on public.trip_vault (trip_id, start_at);
+
+alter table public.trip_vault enable row level security;
+
+-- ---------------------------------------------------------------------------
+-- 9. trip_budget — 여행 예산 목표
+-- ---------------------------------------------------------------------------
+
+create table if not exists public.trip_budget (
+  trip_id text not null primary key,
+  target_twd integer not null default 0 check (target_twd >= 0),
+  cash_start_twd integer not null default 0 check (cash_start_twd >= 0),
+  daily_limit_twd integer not null default 0 check (daily_limit_twd >= 0),
+  notes text not null default '',
+  updated_at timestamptz not null default now()
+);
+
+alter table public.trip_budget enable row level security;
+
+-- ---------------------------------------------------------------------------
+-- 10. Storage bucket — 사진 업로드 (PhotoUploader 컴포넌트가 사용)
 -- ---------------------------------------------------------------------------
 
 insert into storage.buckets (id, name, public)
