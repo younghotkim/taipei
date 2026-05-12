@@ -5,7 +5,6 @@ import { categoryLabels, type TripStop } from "@/lib/trip-data";
 import { authorLabels, combinedRating, getStopMemory, type Memory, type MemoryBook } from "@/lib/memory-types";
 import { distanceMeters } from "@/lib/integrations";
 import { type ExpenseEntry } from "@/lib/expense-ledger";
-import { BINGO_CHALLENGES, completedLineIndices } from "@/lib/bingo";
 import { TwdKrwLabel } from "./ExpenseDashboard";
 import { useItineraryContext } from "./ItineraryContext";
 
@@ -38,13 +37,11 @@ function formatKm(meters: number): string {
 export function RecapMode({
   memoryBook,
   ledgerEntries = [],
-  bingoDone = [],
   onExport,
   onSelectStop
 }: {
   memoryBook: MemoryBook;
   ledgerEntries?: ExpenseEntry[];
-  bingoDone?: number[];
   onExport: () => void;
   onSelectStop: (stop: TripStop) => void;
 }) {
@@ -235,7 +232,7 @@ export function RecapMode({
         </div>
       </section>
 
-      <RecapWrapped memoryBook={memoryBook} bingoDone={bingoDone} onSelectStop={onSelectStop} />
+      <RecapWrapped memoryBook={memoryBook} onSelectStop={onSelectStop} />
 
       <RecapPhotoGrid memoryBook={memoryBook} onSelectStop={onSelectStop} />
 
@@ -246,11 +243,9 @@ export function RecapMode({
 
 function RecapWrapped({
   memoryBook,
-  bingoDone = [],
   onSelectStop
 }: {
   memoryBook: MemoryBook;
-  bingoDone?: number[];
   onSelectStop: (stop: TripStop) => void;
 }) {
   const { snapshot } = useItineraryContext();
@@ -305,9 +300,8 @@ function RecapWrapped({
     (a, b) => Math.abs(a.memory.ratingY - a.memory.ratingS) > Math.abs(b.memory.ratingY - b.memory.ratingS)
   );
 
-  const bingoLines = completedLineIndices(bingoDone).length;
   const hasAny =
-    done.length > 0 || commentCount > 0 || photoCount > 0 || bestStop !== null || bingoDone.length > 0;
+    done.length > 0 || commentCount > 0 || photoCount > 0 || bestStop !== null;
 
   return (
     <section className="recap-wrapped">
@@ -388,13 +382,6 @@ function RecapWrapped({
           <strong>{formatKm(avgWalkM)}</strong>
           <small>추정</small>
         </div>
-        {bingoDone.length > 0 && (
-          <div className="recap-wrapped__card">
-            <span>여행 빙고</span>
-            <strong>{bingoDone.length}/{BINGO_CHALLENGES.length}칸</strong>
-            <small>{bingoLines}줄 완성</small>
-          </div>
-        )}
         {reVisit.length > 0 && (
           <div className="recap-wrapped__card recap-wrapped__card--wide">
             <span>다음에 또 올 곳</span>

@@ -7,7 +7,7 @@
    - stale-while-revalidate for other same-origin GETs (icons, manifest, ...)
    Bump CACHE_VERSION to invalidate everything on a new deploy. */
 
-const CACHE_VERSION = "taipei-trip-v2";
+const CACHE_VERSION = "taipei-trip-v3";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

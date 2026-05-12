@@ -8,6 +8,7 @@ export type VaultItem = {
   title: string;
   provider: string;
   confirmation: string;
+  flightNo: string;
   startAt: string;
   location: string;
   link: string;
@@ -59,6 +60,7 @@ export function emptyVaultItem(): VaultItem {
     title: "",
     provider: "",
     confirmation: "",
+    flightNo: "",
     startAt: "",
     location: "",
     link: "",
@@ -79,6 +81,7 @@ export function normalizeVaultItem(value: unknown): VaultItem | null {
     title: typeof raw.title === "string" ? raw.title : "",
     provider: typeof raw.provider === "string" ? raw.provider : "",
     confirmation: typeof raw.confirmation === "string" ? raw.confirmation : "",
+    flightNo: typeof raw.flightNo === "string" ? raw.flightNo : "",
     startAt: typeof raw.startAt === "string" ? raw.startAt : "",
     location: typeof raw.location === "string" ? raw.location : "",
     link: typeof raw.link === "string" ? raw.link : "",

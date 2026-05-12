@@ -34,12 +34,6 @@ export type TripExpenseRow = {
   at: string;
 };
 
-export type TripBingoRow = {
-  trip_id: string;
-  done: number[];
-  updated_at?: string;
-};
-
 export type TripVaultRow = {
   trip_id: string;
   id: string;
@@ -47,6 +41,7 @@ export type TripVaultRow = {
   title: string;
   provider: string;
   confirmation: string;
+  flight_no?: string;
   start_at: string;
   location: string;
   link: string;
@@ -58,12 +53,13 @@ export type TripVaultRow = {
   updated_at?: string;
 };
 
-export type TripBudgetRow = {
+export type TripPackingRow = {
   trip_id: string;
-  target_twd: number;
-  cash_start_twd: number;
-  daily_limit_twd: number;
-  notes: string;
+  id: string;
+  label: string;
+  category: string;
+  owner: string;
+  packed: boolean;
   updated_at?: string;
 };
 

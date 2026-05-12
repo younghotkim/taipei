@@ -14,7 +14,6 @@ import {
   type MemoryBook
 } from "@/lib/memory-types";
 import { type ExpenseEntry } from "@/lib/expense-ledger";
-import { type BudgetSettings } from "@/lib/budget";
 import { useItineraryContext } from "./ItineraryContext";
 import { TwdKrwLabel } from "./ExpenseDashboard";
 
@@ -62,19 +61,15 @@ function hhmm(iso: string): string {
 export function LedgerMode({
   memoryBook,
   ledger,
-  budget,
   todayTripDay,
   onAdd,
-  onSaveBudget,
   onRemove,
   onSelectStop
 }: {
   memoryBook: MemoryBook;
   ledger: ExpenseEntry[];
-  budget: BudgetSettings;
   todayTripDay: number | null;
   onAdd: (data: { day: number; amount: number; category: ExpenseCategory; payer: ExpensePayer; method: ExpenseMethod; label: string }) => void;
-  onSaveBudget: (settings: BudgetSettings) => void;
   onRemove: (id: string) => void;
   onSelectStop: (stop: TripStop) => void;
 }) {
@@ -116,10 +111,6 @@ export function LedgerMode({
   const allRows: LedgerRow[] = [...stopRows, ...ledgerRows];
 
   const total = allRows.reduce((s, r) => s + r.amount, 0);
-  const cashSpent = allRows.filter((r) => r.method === "cash").reduce((s, r) => s + r.amount, 0);
-  const cardSpent = allRows.filter((r) => r.method === "card").reduce((s, r) => s + r.amount, 0);
-  const budgetUsedPct = budget.targetTwd > 0 ? Math.min(100, Math.round((total / budget.targetTwd) * 100)) : 0;
-  const cashLeft = Math.max(0, budget.cashStartTwd - cashSpent);
   const split = allRows.reduce(
     (acc, r) => {
       if (r.payer === "y") acc.y += r.amount;
@@ -178,52 +169,16 @@ export function LedgerMode({
           <div><span>공동</span><strong>{split.shared.toLocaleString()}</strong></div>
           <div><span>미지정</span><strong>{split.unassigned.toLocaleString()}</strong></div>
         </div>
-        <div className="ledger-summary__settle">정산 — {settle}</div>
-      </section>
-
-      <section className="ledger-budget">
-        <header>
-          <strong>예산 목표</strong>
-          <span>{budget.targetTwd > 0 ? `${budgetUsedPct}% 사용` : "목표 미설정"}</span>
-        </header>
-        <div className="ledger-budget__bar">
-          <div style={{ width: `${budgetUsedPct}%` }} />
-        </div>
-        <div className="ledger-budget__grid">
-          <label className="field">
-            <span>총 예산 TWD</span>
-            <input
-              inputMode="numeric"
-              value={budget.targetTwd ? String(budget.targetTwd) : ""}
-              onChange={(e) => onSaveBudget({ ...budget, targetTwd: Number(e.target.value.replace(/[^0-9]/g, "")) || 0 })}
-            />
-          </label>
-          <label className="field">
-            <span>시작 현금 TWD</span>
-            <input
-              inputMode="numeric"
-              value={budget.cashStartTwd ? String(budget.cashStartTwd) : ""}
-              onChange={(e) => onSaveBudget({ ...budget, cashStartTwd: Number(e.target.value.replace(/[^0-9]/g, "")) || 0 })}
-            />
-          </label>
-          <label className="field">
-            <span>일일 목표 TWD</span>
-            <input
-              inputMode="numeric"
-              value={budget.dailyLimitTwd ? String(budget.dailyLimitTwd) : ""}
-              onChange={(e) => onSaveBudget({ ...budget, dailyLimitTwd: Number(e.target.value.replace(/[^0-9]/g, "")) || 0 })}
-            />
-          </label>
-        </div>
-        <div className="ledger-budget__stats">
-          <span>남은 예산 TWD {Math.max(0, budget.targetTwd - total).toLocaleString()}</span>
-          <span>현금 사용 TWD {cashSpent.toLocaleString()}</span>
-          <span>현금 잔액 TWD {cashLeft.toLocaleString()}</span>
-          <span>카드 TWD {cardSpent.toLocaleString()}</span>
+        <div className={`ledger-summary__settle${split.y !== split.s ? " ledger-summary__settle--due" : ""}`}>
+          <span>정산</span>
+          {settle}
         </div>
       </section>
 
       <section className="ledger-add">
+        <header className="ledger-add__head">
+          <Plus size={13} /> 지출 추가
+        </header>
         <div className="ledger-add__main">
           <input
             className="ledger-add__amount"
@@ -252,39 +207,51 @@ export function LedgerMode({
           aria-label="메모"
         />
         <div className="ledger-add__selects">
-          <select value={category} onChange={(e) => setCategory(e.target.value as ExpenseCategory)} aria-label="분류">
-            {(Object.keys(expenseCategoryLabels) as ExpenseCategory[])
-              .filter((c) => c !== "none")
-              .map((c) => (
-                <option key={c} value={c}>
-                  {catEmoji[c]} {expenseCategoryLabels[c]}
+          <label className="ledger-add__sel">
+            <span>분류</span>
+            <select value={category} onChange={(e) => setCategory(e.target.value as ExpenseCategory)}>
+              {(Object.keys(expenseCategoryLabels) as ExpenseCategory[])
+                .filter((c) => c !== "none")
+                .map((c) => (
+                  <option key={c} value={c}>
+                    {catEmoji[c]} {expenseCategoryLabels[c]}
+                  </option>
+                ))}
+            </select>
+          </label>
+          <label className="ledger-add__sel">
+            <span>결제자</span>
+            <select value={payer} onChange={(e) => setPayer(e.target.value as ExpensePayer)}>
+              {(Object.keys(expensePayerLabels) as ExpensePayer[])
+                .filter((p) => p !== "none")
+                .map((p) => (
+                  <option key={p} value={p}>
+                    {expensePayerLabels[p]}
+                  </option>
+                ))}
+            </select>
+          </label>
+          <label className="ledger-add__sel">
+            <span>수단</span>
+            <select value={method} onChange={(e) => setMethod(e.target.value as ExpenseMethod)}>
+              {(Object.keys(expenseMethodLabels) as ExpenseMethod[]).map((m) => (
+                <option key={m} value={m}>
+                  {expenseMethodLabels[m]}
                 </option>
               ))}
-          </select>
-          <select value={payer} onChange={(e) => setPayer(e.target.value as ExpensePayer)} aria-label="결제자">
-            {(Object.keys(expensePayerLabels) as ExpensePayer[])
-              .filter((p) => p !== "none")
-              .map((p) => (
-                <option key={p} value={p}>
-                  {expensePayerLabels[p]}
+            </select>
+          </label>
+          <label className="ledger-add__sel">
+            <span>날짜</span>
+            <select value={day} onChange={(e) => setDay(Number(e.target.value))}>
+              {tripDays.map((d) => (
+                <option key={d.day} value={d.day}>
+                  Day {d.day}
                 </option>
               ))}
-          </select>
-          <select value={method} onChange={(e) => setMethod(e.target.value as ExpenseMethod)} aria-label="결제 수단">
-            {(Object.keys(expenseMethodLabels) as ExpenseMethod[]).map((m) => (
-              <option key={m} value={m}>
-                {expenseMethodLabels[m]}
-              </option>
-            ))}
-          </select>
-          <select value={day} onChange={(e) => setDay(Number(e.target.value))} aria-label="날짜">
-            {tripDays.map((d) => (
-              <option key={d.day} value={d.day}>
-                Day {d.day}
-              </option>
-            ))}
-            <option value={0}>미지정</option>
-          </select>
+              <option value={0}>미지정</option>
+            </select>
+          </label>
         </div>
       </section>
 

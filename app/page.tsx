@@ -14,10 +14,10 @@ import {
   ExternalLink,
   FileText,
   FolderLock,
-  Grid3x3,
   Import,
   ListChecks,
   Loader2,
+  Luggage,
   Map as MapIcon,
   Navigation,
   Pencil,
@@ -27,6 +27,7 @@ import {
   Search,
   Star,
   Sun,
+  Timer,
   Trash2,
   Wallet
 } from "lucide-react";
@@ -35,10 +36,12 @@ import { MapView } from "./components/MapView";
 import { TodayMode } from "./components/TodayMode";
 import { RecapMode } from "./components/RecapMode";
 import { LedgerMode } from "./components/LedgerMode";
-import { BingoMode } from "./components/BingoMode";
 import { categoryIcon } from "./components/icons";
 import { DayWeatherBadge } from "./components/WeatherBar";
 import { PhotoUploader } from "./components/PhotoUploader";
+import { PackingList } from "./components/PackingList";
+import { TaipeiInfo } from "./components/TaipeiInfo";
+import { FlightStatusBadge } from "./components/FlightStatusBadge";
 import { ItineraryProvider, useItineraryContext } from "./components/ItineraryContext";
 import { StopEditor, DayEditor } from "./components/StopEditor";
 import { CommentThread } from "./components/CommentThread";
@@ -54,10 +57,8 @@ import {
 } from "@/lib/trip-data";
 import { getPlan, newStopId, stopToRow, type StopRow } from "@/lib/itinerary";
 import { useExpenses } from "@/lib/use-expenses";
-import { useBingo } from "@/lib/use-bingo";
-import { useBudget } from "@/lib/use-budget";
 import { useVault } from "@/lib/use-vault";
-import { type BudgetSettings } from "@/lib/budget";
+import { usePacking } from "@/lib/use-packing";
 import {
   emptyVaultItem,
   vaultKindLabels,
@@ -82,7 +83,7 @@ import {
   type MemoryBook
 } from "@/lib/memory-types";
 
-type ShellMode = "plan" | "today" | "bingo" | "vault" | "memories" | "ledger" | "recap";
+type ShellMode = "plan" | "today" | "vault" | "memories" | "ledger" | "recap";
 type PlanView = "list" | "map" | "edit";
 type MemoryView = "list" | "edit";
 type SyncStatus = "local" | "loading" | "synced" | "saving" | "offline" | "error";
@@ -146,7 +147,6 @@ function isShellMode(value: string | null): value is ShellMode {
   return (
     value === "plan" ||
     value === "today" ||
-    value === "bingo" ||
     value === "vault" ||
     value === "memories" ||
     value === "ledger" ||
@@ -177,8 +177,7 @@ const combinedSyncMeta: Record<CombinedSync, { label: string }> = {
 const modeLabels: Record<ShellMode, string> = {
   plan: "일정",
   today: "오늘",
-  bingo: "빙고",
-  vault: "보관함",
+  vault: "준비",
   ledger: "가계부",
   memories: "기록",
   recap: "회고"
@@ -187,8 +186,7 @@ const modeLabels: Record<ShellMode, string> = {
 const modeIcons: Record<ShellMode, React.ReactNode> = {
   plan: <MapIcon size={16} />,
   today: <Sun size={16} />,
-  bingo: <Grid3x3 size={16} />,
-  vault: <FolderLock size={16} />,
+  vault: <Luggage size={16} />,
   ledger: <Wallet size={16} />,
   memories: <FileText size={16} />,
   recap: <BarChart3 size={16} />
@@ -216,9 +214,8 @@ function HomeShell() {
   const tripStops = snapshot.stops;
   const fallbackStopId = tripStops[0]?.id ?? "";
   const expenses = useExpenses();
-  const bingo = useBingo();
-  const budget = useBudget();
   const vault = useVault();
+  const packing = usePacking();
 
   const [mode, setMode] = useState<ShellMode>("plan");
   const [planView, setPlanView] = useState<PlanView>("list");
@@ -329,10 +326,9 @@ function HomeShell() {
     void loadRemoteMemories();
     void itinerary.refresh();
     void expenses.refresh();
-    void bingo.refresh();
-    void budget.refresh();
     void vault.refresh();
-  }, [loadRemoteMemories, itinerary, expenses, bingo, budget, vault]);
+    void packing.refresh();
+  }, [loadRemoteMemories, itinerary, expenses, vault, packing]);
 
   const selectDay = (day: number) => {
     setActiveDay(day);
@@ -642,13 +638,12 @@ function HomeShell() {
         />
       )}
 
-      {mode === "bingo" && <BingoMode done={bingo.done} onToggle={bingo.toggle} />}
-
       {mode === "vault" && (
         <VaultMode
           items={vault.items}
           onUpsert={vault.upsert}
           onRemove={vault.remove}
+          packing={packing}
         />
       )}
 
@@ -656,8 +651,6 @@ function HomeShell() {
         <LedgerMode
           memoryBook={memoryBook}
           ledger={expenses.entries}
-          budget={budget.settings}
-          onSaveBudget={budget.save}
           todayTripDay={isoDayMap[todayIso()] ?? null}
           onAdd={expenses.addEntry}
           onRemove={expenses.removeEntry}
@@ -673,7 +666,6 @@ function HomeShell() {
         <RecapMode
           memoryBook={memoryBook}
           ledgerEntries={expenses.entries}
-          bingoDone={bingo.done}
           onExport={exportMemories}
           onSelectStop={(stop) => {
             handleSelectStop(stop);
@@ -1145,17 +1137,32 @@ function MemoriesShell({
   );
 }
 
+function fmtCountdown(ms: number): string {
+  const mins = Math.max(0, Math.floor(ms / 60000));
+  if (mins < 60) return `${mins}분 후`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}시간 후`;
+  const days = Math.floor(hours / 24);
+  const remHours = hours % 24;
+  return remHours > 0 ? `${days}일 ${remHours}시간 후` : `${days}일 후`;
+}
+
 function VaultMode({
   items,
   onUpsert,
-  onRemove
+  onRemove,
+  packing
 }: {
   items: VaultItem[];
   onUpsert: (item: VaultItem) => void;
   onRemove: (id: string) => void;
+  packing: ReturnType<typeof usePacking>;
 }) {
   const [draft, setDraft] = useState<VaultItem>(() => emptyVaultItem());
   const [filter, setFilter] = useState<VaultKind | "all">("all");
+  const [addOpen, setAddOpen] = useState(false);
+  const formRef = useRef<HTMLDivElement | null>(null);
+  const editing = items.some((item) => item.id === draft.id);
   const filtered = items
     .filter((item) => filter === "all" || item.kind === filter)
     .slice()
@@ -1163,115 +1170,190 @@ function VaultMode({
   const pendingCount = items.filter((item) => item.status === "pending").length;
   const totalReservationAmount = items.reduce((sum, item) => sum + item.amount, 0);
 
+  const nowMs = Date.now();
+  const upcoming = items
+    .filter((item) => item.startAt && item.status !== "cancelled")
+    .map((item) => ({ item, ms: new Date(item.startAt).getTime() - nowMs }))
+    .filter((entry) => Number.isFinite(entry.ms) && entry.ms > 0)
+    .sort((a, b) => a.ms - b.ms);
+  const imminentMs = 24 * 60 * 60 * 1000;
+
   const updateDraft = <K extends keyof VaultItem>(key: K, value: VaultItem[K]) => {
     setDraft((current) => ({ ...current, [key]: value }));
+  };
+
+  const resetForm = () => {
+    setDraft(emptyVaultItem());
+    setAddOpen(false);
   };
 
   const submit = () => {
     if (!draft.title.trim()) return;
     onUpsert({ ...draft, title: draft.title.trim() });
-    setDraft(emptyVaultItem());
+    resetForm();
+  };
+
+  const startEdit = (item: VaultItem) => {
+    setDraft(item);
+    setAddOpen(true);
+    requestAnimationFrame(() => formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
   };
 
   return (
     <section className="vault-stage">
       <header className="vault-head">
         <div>
-          <span><FolderLock size={13} /> 예약·문서 보관함</span>
-          <h1>중요 정보</h1>
-          <p>항공권, 숙소, 카발란 예약, eSIM, 보험, 문서 링크를 한 곳에 모읍니다.</p>
+          <span><Luggage size={13} /> 여행 준비</span>
+          <h1>준비물 · 예약 · 정보</h1>
+          <p>항공·숙소·예약 보관함, 챙길 준비물 체크리스트, 타이베이 현지 정보를 한 곳에.</p>
         </div>
         <div className="vault-stats">
-          <div><span>항목</span><strong>{items.length}</strong></div>
+          <div><span>예약·문서</span><strong>{items.length}</strong></div>
           <div><span>확인 필요</span><strong>{pendingCount}</strong></div>
-          <div><span>예약금</span><strong>TWD {totalReservationAmount.toLocaleString()}</strong></div>
+          <div><span>준비물 챙김</span><strong>{packing.items.filter((i) => i.packed).length}/{packing.items.length}</strong></div>
         </div>
       </header>
 
-      <section className="vault-add">
-        <div className="vault-add__grid">
-          <label className="field">
-            <span>종류</span>
-            <select value={draft.kind} onChange={(e) => updateDraft("kind", e.target.value as VaultKind)}>
-              {(Object.keys(vaultKindLabels) as VaultKind[]).map((kind) => (
-                <option key={kind} value={kind}>{vaultKindLabels[kind]}</option>
-              ))}
-            </select>
-          </label>
+      {upcoming.length > 0 && (
+        <div className="vault-reminders">
+          <header><Timer size={13} /> 다가오는 예약</header>
+          <ul>
+            {upcoming.slice(0, 4).map(({ item, ms }) => (
+              <li key={item.id} className={ms <= imminentMs ? "vault-reminder vault-reminder--soon" : "vault-reminder"}>
+                <span className="vault-reminder__kind">{vaultKindLabels[item.kind]}</span>
+                <span className="vault-reminder__title">{item.title}</span>
+                <span className="vault-reminder__when">
+                  {fmtCountdown(ms)}
+                  <em>{item.startAt.replace("T", " ")}</em>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="vault-add-bar" ref={formRef}>
+        <button
+          className={addOpen ? "vault-add-toggle vault-add-toggle--open" : "vault-add-toggle"}
+          onClick={() => (addOpen ? resetForm() : setAddOpen(true))}
+        >
+          {addOpen ? <ChevronUp size={16} /> : <Plus size={16} />}
+          {addOpen ? (editing ? "수정 중 — 닫기" : "추가 닫기") : "예약·문서 추가"}
+        </button>
+      </div>
+
+      {addOpen && (
+        <section className="vault-add">
           <label className="field field--wide">
             <span>제목</span>
-            <input value={draft.title} onChange={(e) => updateDraft("title", e.target.value)} placeholder="예: 카발란 투어 예약" />
+            <input value={draft.title} onChange={(e) => updateDraft("title", e.target.value)} placeholder="예: 카발란 투어 예약" autoFocus />
           </label>
-          <label className="field">
+          <div className="vault-add__grid">
+            <label className="field">
+              <span>종류</span>
+              <select value={draft.kind} onChange={(e) => updateDraft("kind", e.target.value as VaultKind)}>
+                {(Object.keys(vaultKindLabels) as VaultKind[]).map((kind) => (
+                  <option key={kind} value={kind}>{vaultKindLabels[kind]}</option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>상태</span>
+              <select value={draft.status} onChange={(e) => updateDraft("status", e.target.value as VaultItem["status"])}>
+                {(Object.keys(vaultStatusLabels) as VaultItem["status"][]).map((status) => (
+                  <option key={status} value={status}>{vaultStatusLabels[status]}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <label className="field field--wide">
             <span>일시</span>
             <input type="datetime-local" value={draft.startAt} onChange={(e) => updateDraft("startAt", e.target.value)} />
           </label>
-        </div>
-        <div className="vault-add__grid">
-          <label className="field">
-            <span>업체/앱</span>
-            <input value={draft.provider} onChange={(e) => updateDraft("provider", e.target.value)} placeholder="Booking, KKday, 항공사" />
-          </label>
-          <label className="field">
-            <span>예약번호</span>
-            <input value={draft.confirmation} onChange={(e) => updateDraft("confirmation", e.target.value)} />
-          </label>
-          <label className="field">
-            <span>담당</span>
-            <select value={draft.owner} onChange={(e) => updateDraft("owner", e.target.value as VaultItem["owner"])}>
-              {(Object.keys(vaultOwnerLabels) as VaultItem["owner"][]).map((owner) => (
-                <option key={owner} value={owner}>{vaultOwnerLabels[owner]}</option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <div className="vault-add__grid">
-          <label className="field">
-            <span>상태</span>
-            <select value={draft.status} onChange={(e) => updateDraft("status", e.target.value as VaultItem["status"])}>
-              {(Object.keys(vaultStatusLabels) as VaultItem["status"][]).map((status) => (
-                <option key={status} value={status}>{vaultStatusLabels[status]}</option>
-              ))}
-            </select>
-          </label>
-          <label className="field">
-            <span>금액 TWD</span>
-            <input
-              inputMode="numeric"
-              value={draft.amount ? String(draft.amount) : ""}
-              onChange={(e) => updateDraft("amount", Number(e.target.value.replace(/[^0-9]/g, "")) || 0)}
-            />
-          </label>
+          {draft.kind === "flight" && (
+            <label className="field field--wide">
+              <span>항공편 번호 (실시간 상태 조회용)</span>
+              <input
+                value={draft.flightNo}
+                onChange={(e) => updateDraft("flightNo", e.target.value)}
+                placeholder="예: KE691 / CI160 / BR205"
+                autoCapitalize="characters"
+              />
+            </label>
+          )}
+          <div className="vault-add__grid">
+            <label className="field">
+              <span>업체/앱</span>
+              <input value={draft.provider} onChange={(e) => updateDraft("provider", e.target.value)} placeholder="Booking, KKday, 항공사" />
+            </label>
+            <label className="field">
+              <span>예약번호</span>
+              <input value={draft.confirmation} onChange={(e) => updateDraft("confirmation", e.target.value)} />
+            </label>
+          </div>
+          <div className="vault-add__grid">
+            <label className="field">
+              <span>담당</span>
+              <select value={draft.owner} onChange={(e) => updateDraft("owner", e.target.value as VaultItem["owner"])}>
+                {(Object.keys(vaultOwnerLabels) as VaultItem["owner"][]).map((owner) => (
+                  <option key={owner} value={owner}>{vaultOwnerLabels[owner]}</option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              <span>금액 TWD</span>
+              <input
+                inputMode="numeric"
+                placeholder="0"
+                value={draft.amount ? String(draft.amount) : ""}
+                onChange={(e) => updateDraft("amount", Number(e.target.value.replace(/[^0-9]/g, "")) || 0)}
+              />
+            </label>
+          </div>
           <label className="field field--wide">
             <span>장소</span>
-            <input value={draft.location} onChange={(e) => updateDraft("location", e.target.value)} />
+            <input value={draft.location} onChange={(e) => updateDraft("location", e.target.value)} placeholder="공항 터미널, 호텔 주소, 미팅 포인트" />
           </label>
-        </div>
-        <label className="field">
-          <span>예약/문서 링크</span>
-          <input value={draft.link} onChange={(e) => updateDraft("link", e.target.value)} placeholder="예약 페이지, PDF, Google Drive, 메일 링크" />
-        </label>
-        <label className="field">
-          <span>메모</span>
-          <textarea value={draft.notes} onChange={(e) => updateDraft("notes", e.target.value)} placeholder="체크인 조건, 준비물, 취소 규정, 현장 제시 방법" />
-        </label>
-        <button className="wide-link wide-link--primary" onClick={submit} disabled={!draft.title.trim()}>
-          <Save size={16} />
-          보관
-        </button>
-      </section>
+          <label className="field field--wide">
+            <span>예약/문서 링크</span>
+            <input value={draft.link} onChange={(e) => updateDraft("link", e.target.value)} placeholder="예약 페이지, PDF, Google Drive, 메일 링크" />
+          </label>
+          <label className="field field--wide">
+            <span>메모</span>
+            <textarea value={draft.notes} onChange={(e) => updateDraft("notes", e.target.value)} placeholder="체크인 조건, 준비물, 취소 규정, 현장 제시 방법" />
+          </label>
+          <div className="vault-add__actions">
+            {editing && (
+              <button className="wide-link" onClick={resetForm}>취소</button>
+            )}
+            <button className="wide-link wide-link--primary" onClick={submit} disabled={!draft.title.trim()}>
+              <Save size={16} />
+              {editing ? "수정 저장" : "보관"}
+            </button>
+          </div>
+        </section>
+      )}
 
-      <div className="category-strip category-strip--vault">
-        <button className={filter === "all" ? "filter-chip filter-chip--active" : "filter-chip"} onClick={() => setFilter("all")}>전체</button>
-        {(Object.keys(vaultKindLabels) as VaultKind[]).map((kind) => (
-          <button key={kind} className={filter === kind ? "filter-chip filter-chip--active" : "filter-chip"} onClick={() => setFilter(kind)}>
-            {vaultKindLabels[kind]}
-          </button>
-        ))}
-      </div>
+      {items.length > 0 && (
+        <div className="category-strip category-strip--vault">
+          <button className={filter === "all" ? "filter-chip filter-chip--active" : "filter-chip"} onClick={() => setFilter("all")}>전체</button>
+          {(Object.keys(vaultKindLabels) as VaultKind[])
+            .filter((kind) => items.some((item) => item.kind === kind))
+            .map((kind) => (
+              <button key={kind} className={filter === kind ? "filter-chip filter-chip--active" : "filter-chip"} onClick={() => setFilter(kind)}>
+                {vaultKindLabels[kind]}
+              </button>
+            ))}
+        </div>
+      )}
 
       <section className="vault-list">
-        {filtered.length === 0 && <div className="empty-state">아직 보관한 예약/문서가 없습니다.</div>}
+        {filtered.length === 0 && (
+          <div className="empty-state">
+            <FolderLock size={18} />
+            {items.length === 0 ? "위 ‘예약·문서 추가’로 항공권·숙소·예약을 모아두세요." : "이 종류에 해당하는 항목이 없습니다."}
+          </div>
+        )}
         {filtered.map((item) => (
           <article key={item.id} className={`vault-card vault-card--${item.status}`}>
             <header>
@@ -1281,13 +1363,15 @@ function VaultMode({
             </header>
             <div className="vault-card__meta">
               {item.startAt && <span>{item.startAt.replace("T", " ")}</span>}
+              {item.flightNo && <span>✈ {item.flightNo}</span>}
               {item.provider && <span>{item.provider}</span>}
               {item.confirmation && <span>예약번호 {item.confirmation}</span>}
               <span>{vaultOwnerLabels[item.owner]}</span>
               {item.amount > 0 && <span>TWD {item.amount.toLocaleString()}</span>}
             </div>
-            {item.location && <p>{item.location}</p>}
+            {item.location && <p className="vault-card__loc">{item.location}</p>}
             {item.notes && <p>{item.notes}</p>}
+            {item.kind === "flight" && item.flightNo && <FlightStatusBadge flightNo={item.flightNo} />}
             <div className="vault-card__actions">
               {item.link && (
                 <a href={item.link} target="_blank" rel="noreferrer">
@@ -1295,7 +1379,7 @@ function VaultMode({
                   열기
                 </a>
               )}
-              <button onClick={() => setDraft(item)}>
+              <button onClick={() => startEdit(item)}>
                 <Pencil size={14} />
                 수정
               </button>
@@ -1307,6 +1391,16 @@ function VaultMode({
           </article>
         ))}
       </section>
+
+      <PackingList
+        items={packing.items}
+        onToggle={packing.toggle}
+        onAdd={packing.add}
+        onRemove={packing.remove}
+        onReset={packing.resetToPreset}
+      />
+
+      <TaipeiInfo />
     </section>
   );
 }
