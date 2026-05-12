@@ -5142,6 +5142,27 @@ a {
   transition: background 0.15s, border-color 0.15s;
 }
 
+.quest-card__phrase {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.quest-card__phrase-zh {
+  font-size: 14px;
+}
+
+.quest-card__phrase-ko,
+.quest-next__phrase-ko {
+  display: block;
+  margin-top: 1px;
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  font-family: Inter, "Noto Sans KR", sans-serif;
+}
+
 .quest-card__phrase:hover {
   border-color: var(--neon-pink);
   background: rgba(255, 45, 149, 0.14);
