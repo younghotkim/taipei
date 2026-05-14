@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Download, FileText, Footprints, Gift, ImagePlus, Sparkles, Star } from "lucide-react";
 import { categoryLabels, type TripStop } from "@/lib/trip-data";
 import { authorLabels, combinedRating, getStopMemory, type Memory, type MemoryBook } from "@/lib/memory-types";
@@ -7,6 +8,7 @@ import { distanceMeters } from "@/lib/integrations";
 import { type ExpenseEntry } from "@/lib/expense-ledger";
 import { TwdKrwLabel } from "./ExpenseDashboard";
 import { useItineraryContext } from "./ItineraryContext";
+import { PhotoLightbox } from "./PhotoLightbox";
 
 type RecapEntry = { stop: TripStop; memory: Memory };
 
@@ -234,7 +236,7 @@ export function RecapMode({
 
       <RecapWrapped memoryBook={memoryBook} onSelectStop={onSelectStop} />
 
-      <RecapPhotoGrid memoryBook={memoryBook} onSelectStop={onSelectStop} />
+      <RecapPhotoGrid memoryBook={memoryBook} />
 
       <RecapStories memoryBook={memoryBook} onSelectStop={onSelectStop} />
     </div>
@@ -395,11 +397,9 @@ function RecapWrapped({
 }
 
 function RecapPhotoGrid({
-  memoryBook,
-  onSelectStop
+  memoryBook
 }: {
   memoryBook: MemoryBook;
-  onSelectStop: (stop: TripStop) => void;
 }) {
   const { snapshot } = useItineraryContext();
   const tripStops = snapshot.stops;
@@ -407,32 +407,45 @@ function RecapPhotoGrid({
     .map((stop) => ({ stop, photos: getStopMemory(memoryBook, stop.id).photos }))
     .filter((entry) => entry.photos.length > 0);
 
+  const flat: { url: string; stop: TripStop }[] = [];
+  for (const { stop, photos } of entries) {
+    for (const url of photos) flat.push({ url, stop });
+  }
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
   return (
     <section className="recap-photos-real">
       <header>
         <ImagePlus size={16} />
         <strong>사진 그리드</strong>
-        <span>{entries.reduce((sum, entry) => sum + entry.photos.length, 0)}장</span>
+        <span>{flat.length}장</span>
       </header>
-      {entries.length === 0 ? (
+      {flat.length === 0 ? (
         <div className="recap-photos__placeholder">
           아직 업로드된 사진이 없습니다. 기록 모드에서 사진을 추가해보세요.
         </div>
       ) : (
         <div className="recap-photos__grid">
-          {entries.map(({ stop, photos }) =>
-            photos.map((url, index) => (
-              <button
-                key={`${stop.id}-${index}`}
-                className="recap-photo"
-                onClick={() => onSelectStop(stop)}
-              >
-                <img src={url} alt={`${stop.title}-${index}`} loading="lazy" />
-                <span>{stop.title}</span>
-              </button>
-            ))
-          )}
+          {flat.map(({ url, stop }, flatIndex) => (
+            <button
+              key={`${stop.id}-${flatIndex}`}
+              className="recap-photo"
+              onClick={() => setLightboxIndex(flatIndex)}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={url} alt={`${stop.title}`} loading="lazy" />
+              <span>{stop.title}</span>
+            </button>
+          ))}
         </div>
+      )}
+      {lightboxIndex !== null && (
+        <PhotoLightbox
+          photos={flat.map((entry) => entry.url)}
+          startIndex={lightboxIndex}
+          caption={flat[lightboxIndex]?.stop.title}
+          onClose={() => setLightboxIndex(null)}
+        />
       )}
     </section>
   );

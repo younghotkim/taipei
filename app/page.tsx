@@ -1036,6 +1036,9 @@ function MemoriesShell({
       `${stop.title} ${stop.subtitle} ${memory.note} ${memory.comments.map((c) => c.text).join(" ")}`.toLowerCase();
     return haystack.includes(query.trim().toLowerCase());
   });
+  const activeIndex = tripStops.findIndex((s) => s.id === activeStop.id);
+  const prevStop = activeIndex > 0 ? tripStops[activeIndex - 1] : null;
+  const nextStop = activeIndex >= 0 && activeIndex < tripStops.length - 1 ? tripStops[activeIndex + 1] : null;
 
   return (
     <section className={`memories-stage memories-stage--view-${memoryView}`} aria-label="기록 모드">
@@ -1130,9 +1133,36 @@ function MemoriesShell({
 
       <section className="memories-editor" aria-label="기록 작성">
         <header className="memories-editor__head">
-          <button className="memories-editor__back" onClick={() => onMemoryViewChange("list")}>
-            ← 목록
-          </button>
+          <div className="memories-editor__nav">
+            <button className="memories-editor__back" onClick={() => onMemoryViewChange("list")}>
+              ← 목록
+            </button>
+            <div className="memories-editor__pager">
+              <button
+                type="button"
+                className="memories-editor__step"
+                onClick={() => prevStop && onSelectStop(prevStop)}
+                disabled={!prevStop}
+                aria-label="이전 스톱"
+                title={prevStop ? `← ${prevStop.title}` : "이전 스톱 없음"}
+              >
+                <ChevronUp size={14} style={{ transform: "rotate(-90deg)" }} />
+              </button>
+              <span className="memories-editor__step-count">
+                {activeIndex + 1} / {tripStops.length}
+              </span>
+              <button
+                type="button"
+                className="memories-editor__step"
+                onClick={() => nextStop && onSelectStop(nextStop)}
+                disabled={!nextStop}
+                aria-label="다음 스톱"
+                title={nextStop ? `${nextStop.title} →` : "다음 스톱 없음"}
+              >
+                <ChevronUp size={14} style={{ transform: "rotate(90deg)" }} />
+              </button>
+            </div>
+          </div>
           <span>{activeStop.date} · {activeStop.time}</span>
           <h2>{activeStop.title}</h2>
           <p>{activeStop.subtitle}</p>

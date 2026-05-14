@@ -7,6 +7,7 @@ import {
   Camera,
   Check,
   Clock,
+  ImagePlus,
   Loader2,
   Navigation,
   Send,
@@ -22,6 +23,7 @@ import { TwdKrwLabel } from "./ExpenseDashboard";
 import { NextStopEta } from "./NextStopEta";
 import { GpsAutoStatus } from "./GpsAutoStatus";
 import { NearbyPlaces } from "./NearbyPlaces";
+import { PhotoLightbox } from "./PhotoLightbox";
 import { useItineraryContext } from "./ItineraryContext";
 import {
   categoryColors,
@@ -69,8 +71,10 @@ function CompactCapture({
 }) {
   const [author, setAuthor] = useState<CommentAuthor>("youngha");
   const [text, setText] = useState("");
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const cameraInputRef = useRef<HTMLInputElement | null>(null);
+  const galleryInputRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(authorStorageKey);
@@ -107,7 +111,8 @@ function CompactCapture({
       if (uploaded.length) onChange({ photos: [...memory.photos, ...uploaded] });
     } finally {
       setUploading(false);
-      if (inputRef.current) inputRef.current.value = "";
+      if (cameraInputRef.current) cameraInputRef.current.value = "";
+      if (galleryInputRef.current) galleryInputRef.current.value = "";
     }
   }
 
@@ -207,16 +212,37 @@ function CompactCapture({
         </select>
       </div>
       <div className="quest-capture__photo">
-        <button
-          className="quest-photo-btn"
-          onClick={() => inputRef.current?.click()}
-          disabled={uploading}
-        >
-          {uploading ? <Loader2 size={14} className="weather-bar__spinner" /> : <Camera size={14} />}
-          {uploading ? "올리는 중…" : memory.photos.length > 0 ? `사진 ${memory.photos.length}장 · 추가` : "사진 추가"}
-        </button>
+        <div className="quest-photo-actions">
+          <button
+            className="quest-photo-btn quest-photo-btn--camera"
+            onClick={() => cameraInputRef.current?.click()}
+            disabled={uploading}
+          >
+            {uploading ? <Loader2 size={14} className="weather-bar__spinner" /> : <Camera size={14} />}
+            {uploading ? "올리는 중…" : "📷 사진 찍기"}
+          </button>
+          <button
+            className="quest-photo-btn quest-photo-btn--gallery"
+            onClick={() => galleryInputRef.current?.click()}
+            disabled={uploading}
+            aria-label="갤러리에서 선택"
+          >
+            <ImagePlus size={14} />
+            갤러리
+          </button>
+        </div>
         <input
-          ref={inputRef}
+          ref={cameraInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          hidden
+          onChange={(e) => {
+            if (e.target.files && e.target.files.length) void handleFiles(e.target.files);
+          }}
+        />
+        <input
+          ref={galleryInputRef}
           type="file"
           accept="image/*"
           multiple
@@ -227,12 +253,41 @@ function CompactCapture({
         />
         {memory.photos.length > 0 && (
           <div className="quest-photo-strip">
-            {memory.photos.slice(-4).map((url, i) => (
-              <img key={i} src={url} alt={`photo-${i}`} loading="lazy" />
-            ))}
+            {memory.photos.slice(-4).map((url, i) => {
+              const realIndex = memory.photos.length - Math.min(4, memory.photos.length) + i;
+              return (
+                <button
+                  key={`${url}-${i}`}
+                  type="button"
+                  className="quest-photo-strip__cell"
+                  onClick={() => setLightboxIndex(realIndex)}
+                  aria-label={`사진 ${realIndex + 1} 크게 보기`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt={`photo-${realIndex + 1}`} loading="lazy" />
+                </button>
+              );
+            })}
+            {memory.photos.length > 4 && (
+              <button
+                type="button"
+                className="quest-photo-strip__more"
+                onClick={() => setLightboxIndex(0)}
+              >
+                +{memory.photos.length - 4}
+              </button>
+            )}
           </div>
         )}
       </div>
+      {lightboxIndex !== null && (
+        <PhotoLightbox
+          photos={memory.photos}
+          startIndex={lightboxIndex}
+          caption={stop.title}
+          onClose={() => setLightboxIndex(null)}
+        />
+      )}
       {memory.comments.length > 0 && (
         <div className="quest-capture__log">
           {memory.comments.slice(-3).map((c) => (
@@ -439,6 +494,118 @@ export function TodayMode({
           {reminder.text}
         </div>
       )}
+
+      {/* ── Today pulse: today-only rail + big countdown ── */}
+      {todayTripDay !== null && (() => {
+        const day = days.find((d) => d.day === todayTripDay);
+        const todayStops = stops.filter((s) => s.day === todayTripDay);
+        if (todayStops.length === 0) return null;
+        const nowM = clock.getHours() * 60 + clock.getMinutes();
+        const nextScheduled = todayStops.find((s) => {
+          if (isCleared(s)) return false;
+          const m = timeToMinutes(s.time);
+          return m !== null && m >= nowM;
+        }) ?? null;
+        const passedNext = todayStops.find((s) => {
+          if (isCleared(s)) return false;
+          const m = timeToMinutes(s.time);
+          return m !== null && m < nowM;
+        }) ?? null;
+        const focus = nextScheduled ?? passedNext;
+        const focusM = focus ? timeToMinutes(focus.time) : null;
+        const focusDelta = focusM !== null ? focusM - nowM : null;
+        const fmtMins = (mins: number) => {
+          const abs = Math.abs(mins);
+          if (abs < 60) return `${abs}분`;
+          const h = Math.floor(abs / 60);
+          const m = abs % 60;
+          return m > 0 ? `${h}시간 ${m}분` : `${h}시간`;
+        };
+        return (
+          <section className="today-pulse" aria-label="오늘 흐름">
+            <header className="today-pulse__head">
+              <span className="today-pulse__day">
+                DAY {todayTripDay}
+                {day?.date && <em>· {day.date}</em>}
+              </span>
+              <span className="today-pulse__clock">
+                <Clock size={12} /> {nowHHMM(clock)}
+              </span>
+            </header>
+            <ol className="today-pulse__rail" role="list">
+              {todayStops.map((s) => {
+                const st = memOf(s.id).status;
+                const isCurrent = currentQuest?.id === s.id;
+                const isFocus = focus?.id === s.id;
+                const cls = [
+                  "today-pulse__cell",
+                  st === "done" && "today-pulse__cell--done",
+                  st === "skipped" && "today-pulse__cell--skip",
+                  isCurrent && "today-pulse__cell--current",
+                  isFocus && !isCurrent && "today-pulse__cell--focus"
+                ]
+                  .filter(Boolean)
+                  .join(" ");
+                return (
+                  <li key={s.id}>
+                    <button
+                      type="button"
+                      className={cls}
+                      onClick={() => onSelectStop(s)}
+                      title={`${s.time} ${s.title}`}
+                    >
+                      <span className="today-pulse__time">{s.time || "—"}</span>
+                      <span
+                        className="today-pulse__dot"
+                        style={{ ["--cat" as string]: categoryColors[s.category] }}
+                        aria-hidden="true"
+                      >
+                        {st === "done" ? (
+                          <Check size={11} />
+                        ) : st === "skipped" ? (
+                          <SkipForward size={11} />
+                        ) : (
+                          categoryIcon(s.category, 11)
+                        )}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
+            {focus && focusDelta !== null && (
+              <button
+                type="button"
+                className={
+                  "today-pulse__next" +
+                  (focusDelta < 0
+                    ? " today-pulse__next--late"
+                    : focusDelta <= 15
+                      ? " today-pulse__next--soon"
+                      : "")
+                }
+                onClick={() => onSelectStop(focus)}
+              >
+                <span className="today-pulse__next-label">
+                  {focusDelta < 0 ? "예정 지난 다음" : "다음까지"}
+                </span>
+                <strong className="today-pulse__countdown">
+                  {focusDelta < 0 ? `${fmtMins(focusDelta)} 지남` : `${fmtMins(focusDelta)} 후`}
+                </strong>
+                <span className="today-pulse__next-stop">
+                  {focus.time} · {focus.title}
+                </span>
+              </button>
+            )}
+            {!focus && (
+              <div className="today-pulse__next today-pulse__next--done">
+                <strong>오늘 일정 끝 — 푹 쉬어요 🍻</strong>
+              </div>
+            )}
+          </section>
+        );
+      })()}
+
       {/* ── Progress / timeline ── */}
       <section className="journey-progress">
         <div className="journey-progress__head">

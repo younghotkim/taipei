@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { Loader2, Trash2, Upload } from "lucide-react";
 import { useConfirm } from "./ConfirmProvider";
+import { PhotoLightbox } from "./PhotoLightbox";
 
 export function PhotoUploader({
   stopId,
@@ -16,6 +17,7 @@ export function PhotoUploader({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const confirm = useConfirm();
 
   async function handleFiles(files: FileList) {
@@ -87,7 +89,15 @@ export function PhotoUploader({
       <div className="photo-uploader__grid">
         {photos.map((url, index) => (
           <div key={url} className="photo-uploader__cell">
-            <img src={url} alt={`photo-${index + 1}`} loading="lazy" />
+            <button
+              type="button"
+              className="photo-uploader__open"
+              onClick={() => setLightboxIndex(index)}
+              aria-label={`사진 ${index + 1} 크게 보기`}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={url} alt={`photo-${index + 1}`} loading="lazy" />
+            </button>
             <button
               type="button"
               className="photo-uploader__remove"
@@ -104,6 +114,13 @@ export function PhotoUploader({
           </div>
         )}
       </div>
+      {lightboxIndex !== null && (
+        <PhotoLightbox
+          photos={photos}
+          startIndex={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+        />
+      )}
     </div>
   );
 }
