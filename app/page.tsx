@@ -49,6 +49,7 @@ import { ItineraryProvider, useItineraryContext } from "./components/ItineraryCo
 import { StopEditor, DayEditor } from "./components/StopEditor";
 import { CommentThread } from "./components/CommentThread";
 import { useConfirm } from "./components/ConfirmProvider";
+import { DepartureWidget } from "./components/DepartureWidget";
 import {
   categoryColors,
   categoryLabels,
@@ -566,6 +567,15 @@ function HomeShell() {
           ))}
         </nav>
       </header>
+
+      <DepartureWidget
+        todayIso={todayIso()}
+        startIso={dayIsoDates[1]}
+        packingItems={packing.items}
+        vaultItems={vault.items}
+        travelers={travelers.book}
+        onJump={setMode}
+      />
 
       {mode === "plan" && (
         <PlanShell
