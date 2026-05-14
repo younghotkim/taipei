@@ -212,6 +212,28 @@ alter table public.trip_vault enable row level security;
 alter table public.trip_vault add column if not exists flight_no text not null default '';
 
 -- ---------------------------------------------------------------------------
+-- 7b. trip_travelers — 여행자별 여권 / 출입국심사서
+-- ---------------------------------------------------------------------------
+
+create table if not exists public.trip_travelers (
+  trip_id text not null,
+  id text not null check (id in ('youngha', 'sohyun')),
+  passport_name text not null default '',
+  passport_no text not null default '',
+  nationality text not null default 'KOR',
+  birth_date text not null default '',
+  issue_date text not null default '',
+  expiry_date text not null default '',
+  passport_photo_url text not null default '',
+  arrival_card_url text not null default '',
+  notes text not null default '',
+  updated_at timestamptz not null default now(),
+  primary key (trip_id, id)
+);
+
+alter table public.trip_travelers enable row level security;
+
+-- ---------------------------------------------------------------------------
 -- 8. trip_packing — 준비물 체크리스트
 -- ---------------------------------------------------------------------------
 

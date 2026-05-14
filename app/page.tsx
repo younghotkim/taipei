@@ -42,6 +42,7 @@ import { DayWeatherBadge } from "./components/WeatherBar";
 import { PhotoUploader } from "./components/PhotoUploader";
 import { PackingList } from "./components/PackingList";
 import { TaipeiInfo } from "./components/TaipeiInfo";
+import { TravelerCards } from "./components/TravelerCards";
 import { FlightStatusBadge } from "./components/FlightStatusBadge";
 import { VaultFileField } from "./components/VaultFileField";
 import { ItineraryProvider, useItineraryContext } from "./components/ItineraryContext";
@@ -61,6 +62,7 @@ import { getPlan, newStopId, stopToRow, type StopRow } from "@/lib/itinerary";
 import { useExpenses } from "@/lib/use-expenses";
 import { useVault } from "@/lib/use-vault";
 import { usePacking } from "@/lib/use-packing";
+import { useTravelers } from "@/lib/use-travelers";
 import {
   emptyVaultItem,
   vaultKindLabels,
@@ -218,6 +220,7 @@ function HomeShell() {
   const expenses = useExpenses();
   const vault = useVault();
   const packing = usePacking();
+  const travelers = useTravelers();
 
   const [mode, setMode] = useState<ShellMode>("plan");
   const [planView, setPlanView] = useState<PlanView>("list");
@@ -646,6 +649,7 @@ function HomeShell() {
           onUpsert={vault.upsert}
           onRemove={vault.remove}
           packing={packing}
+          travelers={travelers}
         />
       )}
 
@@ -1153,12 +1157,14 @@ function VaultMode({
   items,
   onUpsert,
   onRemove,
-  packing
+  packing,
+  travelers
 }: {
   items: VaultItem[];
   onUpsert: (item: VaultItem) => void;
   onRemove: (id: string) => void;
   packing: ReturnType<typeof usePacking>;
+  travelers: ReturnType<typeof useTravelers>;
 }) {
   const [draft, setDraft] = useState<VaultItem>(() => emptyVaultItem());
   const [filter, setFilter] = useState<VaultKind | "all">("all");
@@ -1215,6 +1221,8 @@ function VaultMode({
           <div><span>준비물 챙김</span><strong>{packing.items.filter((i) => i.packed).length}/{packing.items.length}</strong></div>
         </div>
       </header>
+
+      <TravelerCards book={travelers.book} onSave={travelers.saveOne} />
 
       {upcoming.length > 0 && (
         <div className="vault-reminders">

@@ -53,6 +53,21 @@ export type TripVaultRow = {
   updated_at?: string;
 };
 
+export type TripTravelerRow = {
+  trip_id: string;
+  id: string;
+  passport_name: string;
+  passport_no: string;
+  nationality: string;
+  birth_date: string;
+  issue_date: string;
+  expiry_date: string;
+  passport_photo_url: string;
+  arrival_card_url: string;
+  notes: string;
+  updated_at?: string;
+};
+
 export type TripPackingRow = {
   trip_id: string;
   id: string;

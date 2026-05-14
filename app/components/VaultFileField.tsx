@@ -18,11 +18,15 @@ function fileLabel(url: string): string {
 export function VaultFileField({
   value,
   itemId,
-  onChange
+  onChange,
+  label = "첨부 파일 — 탑승권 PDF · 바우처 이미지 등 (선택)",
+  addLabel = "파일 첨부"
 }: {
   value: string;
   itemId: string;
   onChange: (url: string) => void;
+  label?: string;
+  addLabel?: string;
 }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -54,7 +58,7 @@ export function VaultFileField({
 
   return (
     <label className="field field--wide vault-file">
-      <span>첨부 파일 — 탑승권 PDF · 바우처 이미지 등 (선택)</span>
+      <span>{label}</span>
       {value ? (
         <div className="vault-file__row">
           {isImage ? (
@@ -81,7 +85,7 @@ export function VaultFileField({
           disabled={uploading}
         >
           {uploading ? <Loader2 size={15} className="spin" /> : <Paperclip size={15} />}
-          {uploading ? "업로드 중…" : "파일 첨부"}
+          {uploading ? "업로드 중…" : addLabel}
         </button>
       )}
       <input
