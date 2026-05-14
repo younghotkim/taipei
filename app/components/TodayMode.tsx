@@ -219,7 +219,7 @@ function CompactCapture({
             disabled={uploading}
           >
             {uploading ? <Loader2 size={14} className="weather-bar__spinner" /> : <Camera size={14} />}
-            {uploading ? "올리는 중…" : "📷 사진 찍기"}
+            {uploading ? "올리는 중…" : " 사진 찍기"}
           </button>
           <button
             className="quest-photo-btn quest-photo-btn--gallery"
