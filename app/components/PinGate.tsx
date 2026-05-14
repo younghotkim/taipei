@@ -1,24 +1,34 @@
 "use client";
 
 import { Delete } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 const PIN = "0102";
 const UNLOCK_KEY = "taipei-trip-pin-unlocked-v1";
 const PIN_LENGTH = 4;
 
+// Routes that are intentionally public — the printable / shareable photobook.
+const PUBLIC_PREFIXES = ["/recap/print"];
+
 type GateState = "checking" | "locked" | "unlocked";
 
 export function PinGate({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isPublic = pathname ? PUBLIC_PREFIXES.some((p) => pathname.startsWith(p)) : false;
   const [state, setState] = useState<GateState>("checking");
   const [pin, setPin] = useState("");
   const [error, setError] = useState(false);
   const [shake, setShake] = useState(false);
 
   useEffect(() => {
+    if (isPublic) {
+      setState("unlocked");
+      return;
+    }
     const unlocked = window.localStorage.getItem(UNLOCK_KEY) === "yes";
     setState(unlocked ? "unlocked" : "locked");
-  }, []);
+  }, [isPublic]);
 
   const submit = useCallback((value: string) => {
     if (value === PIN) {
