@@ -16,6 +16,7 @@ import {
 import { type ExpenseEntry } from "@/lib/expense-ledger";
 import { useItineraryContext } from "./ItineraryContext";
 import { TwdKrwLabel } from "./ExpenseDashboard";
+import { useConfirm } from "./ConfirmProvider";
 
 const catEmoji: Record<ExpenseCategory, string> = {
   none: "•",
@@ -83,6 +84,7 @@ export function LedgerMode({
   const [method, setMethod] = useState<ExpenseMethod>("cash");
   const [label, setLabel] = useState("");
   const [day, setDay] = useState<number>(todayTripDay ?? tripDays[0]?.day ?? 1);
+  const confirm = useConfirm();
 
   function submit() {
     const n = Number(amount.replace(/[^0-9]/g, ""));
@@ -307,7 +309,17 @@ export function LedgerMode({
                   </div>
                   <span className="ledger-row__amt">{r.amount.toLocaleString()}</span>
                   {r.kind === "ledger" ? (
-                    <button className="ledger-row__del" onClick={() => onRemove(r.id)} aria-label="삭제">
+                    <button
+                      className="ledger-row__del"
+                      onClick={async () => {
+                        const ok = await confirm({
+                          title: "이 지출 기록을 삭제할까요?",
+                          description: `${r.label || "지출"} · TWD ${r.amount.toLocaleString()} · ${expenseCategoryLabels[r.category]}`
+                        });
+                        if (ok) onRemove(r.id);
+                      }}
+                      aria-label="삭제"
+                    >
                       <Trash2 size={14} />
                     </button>
                   ) : (

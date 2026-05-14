@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { Loader2, Trash2, Upload } from "lucide-react";
+import { useConfirm } from "./ConfirmProvider";
 
 export function PhotoUploader({
   stopId,
@@ -15,6 +16,7 @@ export function PhotoUploader({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const confirm = useConfirm();
 
   async function handleFiles(files: FileList) {
     setError(null);
@@ -45,7 +47,12 @@ export function PhotoUploader({
     }
   }
 
-  function removeAt(index: number) {
+  async function removeAt(index: number) {
+    const ok = await confirm({
+      title: "이 사진을 삭제할까요?",
+      description: `사진 ${index + 1}장 중 1장이 영구적으로 사라져요.`
+    });
+    if (!ok) return;
     const next = photos.filter((_, i) => i !== index);
     onChange(next);
   }
@@ -84,7 +91,7 @@ export function PhotoUploader({
             <button
               type="button"
               className="photo-uploader__remove"
-              onClick={() => removeAt(index)}
+              onClick={() => { void removeAt(index); }}
               title="제거"
             >
               <Trash2 size={12} />

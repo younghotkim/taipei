@@ -48,6 +48,7 @@ import { VaultFileField } from "./components/VaultFileField";
 import { ItineraryProvider, useItineraryContext } from "./components/ItineraryContext";
 import { StopEditor, DayEditor } from "./components/StopEditor";
 import { CommentThread } from "./components/CommentThread";
+import { useConfirm } from "./components/ConfirmProvider";
 import {
   categoryColors,
   categoryLabels,
@@ -741,6 +742,7 @@ function PlanShell({
   const dayStops = tripStops.filter((stop) => stop.day === activeDay);
   const activeSortOrder = dayStops.findIndex((stop) => stop.id === activeStop.id) * 100;
   const activeDaySortOrder = tripDays.findIndex((d) => d.day === activeDayData.day);
+  const confirm = useConfirm();
   const planViewTabs: { id: PlanView; label: string; icon: React.ReactNode }[] = [
     { id: "list", label: "목록", icon: <ListChecks size={14} /> },
     { id: "map", label: "지도", icon: <MapIcon size={14} /> },
@@ -871,7 +873,18 @@ function PlanShell({
                           <option key={priority} value={priority}>{priorityLabels[priority]}</option>
                         ))}
                       </select>
-                      <button className="stop-row__archive" onClick={() => onArchiveStop(stop.id)} title="제거">
+                      <button
+                        className="stop-row__archive"
+                        onClick={async () => {
+                          const ok = await confirm({
+                            title: `"${stop.title}" 스톱을 일정에서 뺄까요?`,
+                            description: "스톱만 일정에서 사라지고, 기록·사진·코멘트는 보존돼요.",
+                            confirmLabel: "제거"
+                          });
+                          if (ok) onArchiveStop(stop.id);
+                        }}
+                        title="제거"
+                      >
                         <Trash2 size={13} />
                       </button>
                     </div>
@@ -1167,6 +1180,7 @@ function VaultMode({
   travelers: ReturnType<typeof useTravelers>;
 }) {
   const [draft, setDraft] = useState<VaultItem>(() => emptyVaultItem());
+  const confirm = useConfirm();
   const [filter, setFilter] = useState<VaultKind | "all">("all");
   const [addOpen, setAddOpen] = useState(false);
   const formRef = useRef<HTMLDivElement | null>(null);
@@ -1400,7 +1414,15 @@ function VaultMode({
                 <Pencil size={14} />
                 수정
               </button>
-              <button onClick={() => onRemove(item.id)}>
+              <button
+                onClick={async () => {
+                  const ok = await confirm({
+                    title: `"${item.title || "이 항목"}"을(를) 삭제할까요?`,
+                    description: `${vaultKindLabels[item.kind]}${item.provider ? ` · ${item.provider}` : ""}${item.confirmation ? ` · 예약번호 ${item.confirmation}` : ""}`
+                  });
+                  if (ok) onRemove(item.id);
+                }}
+              >
                 <Trash2 size={14} />
                 삭제
               </button>

@@ -11,6 +11,7 @@ import {
   type TripPriority,
   type TripStop
 } from "@/lib/trip-data";
+import { useConfirm } from "./ConfirmProvider";
 
 type StopForm = {
   time: string;
@@ -117,6 +118,7 @@ export function StopEditor({
   const [form, setForm] = useState<StopForm>(() => toForm(stop, plan));
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
+  const confirm = useConfirm();
 
   // When a different stop is selected, reset the form.
   useEffect(() => {
@@ -156,10 +158,13 @@ export function StopEditor({
         <div className="stop-editor__head-actions">
           <button
             className="stop-editor__archive"
-            onClick={() => {
-              if (window.confirm(`"${stop.title}" 스톱을 일정에서 제거할까요? (기록/사진은 보존됩니다)`)) {
-                void onArchive(stop.id);
-              }
+            onClick={async () => {
+              const ok = await confirm({
+                title: `"${stop.title}" 스톱을 일정에서 뺄까요?`,
+                description: "스톱 자체만 일정에서 사라지고, 기록·사진·코멘트는 보존돼요.",
+                confirmLabel: "제거"
+              });
+              if (ok) void onArchive(stop.id);
             }}
             title="일정에서 제거"
           >

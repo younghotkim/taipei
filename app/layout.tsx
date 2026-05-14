@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { ConfirmProvider } from "./components/ConfirmProvider";
 import { PinGate } from "./components/PinGate";
 import { PwaRegister } from "./components/PwaRegister";
 
@@ -29,7 +30,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body>
-        <PinGate>{children}</PinGate>
+        <PinGate>
+          <ConfirmProvider>{children}</ConfirmProvider>
+        </PinGate>
         <PwaRegister />
       </body>
     </html>

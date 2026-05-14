@@ -11,6 +11,7 @@ import {
   type PackCategory,
   type PackItem
 } from "@/lib/packing";
+import { useConfirm } from "./ConfirmProvider";
 
 export function PackingList({
   items,
@@ -28,6 +29,7 @@ export function PackingList({
   const [open, setOpen] = useState(false);
   const [draftLabel, setDraftLabel] = useState("");
   const [draftCat, setDraftCat] = useState<PackCategory>("etc");
+  const confirm = useConfirm();
 
   const packed = items.filter((i) => i.packed).length;
   const total = items.length;
@@ -75,7 +77,17 @@ export function PackingList({
                       <input type="checkbox" checked={item.packed} onChange={() => onToggle(item.id)} />
                       <span>{item.label}</span>
                     </label>
-                    <button className="pack-row__del" onClick={() => onRemove(item.id)} aria-label="삭제">
+                    <button
+                      className="pack-row__del"
+                      onClick={async () => {
+                        const ok = await confirm({
+                          title: "이 준비물을 목록에서 뺄까요?",
+                          description: `"${item.label}" — ${packCategoryLabels[item.category]}`
+                        });
+                        if (ok) onRemove(item.id);
+                      }}
+                      aria-label="삭제"
+                    >
                       <Trash2 size={13} />
                     </button>
                   </li>
@@ -104,7 +116,17 @@ export function PackingList({
             </button>
           </div>
 
-          <button className="pack-reset" onClick={onReset}>
+          <button
+            className="pack-reset"
+            onClick={async () => {
+              const ok = await confirm({
+                title: "준비물 목록을 기본값으로 되돌릴까요?",
+                description: "지금까지 추가·수정한 항목과 체크 표시는 모두 사라져요.",
+                confirmLabel: "초기화"
+              });
+              if (ok) onReset();
+            }}
+          >
             <RotateCcw size={13} />
             기본 목록으로 초기화
           </button>

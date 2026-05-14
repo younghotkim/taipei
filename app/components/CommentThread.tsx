@@ -9,6 +9,7 @@ import {
   type Comment,
   type CommentAuthor
 } from "@/lib/memory-types";
+import { useConfirm } from "./ConfirmProvider";
 
 const authorStorageKey = "taipei-trip-comment-author-v1";
 
@@ -36,6 +37,7 @@ export function CommentThread({
 }) {
   const [author, setAuthor] = useState<CommentAuthor>("youngha");
   const [text, setText] = useState("");
+  const confirm = useConfirm();
 
   useEffect(() => {
     const stored = window.localStorage.getItem(authorStorageKey);
@@ -75,7 +77,14 @@ export function CommentThread({
                 <button
                   type="button"
                   className="comment__del"
-                  onClick={() => onRemove(c.id)}
+                  onClick={async () => {
+                    const preview = c.text.length > 40 ? `${c.text.slice(0, 40)}…` : c.text;
+                    const ok = await confirm({
+                      title: "이 코멘트를 삭제할까요?",
+                      description: `${authorLabels[c.author]} · "${preview}"`
+                    });
+                    if (ok) onRemove(c.id);
+                  }}
                   title="삭제"
                 >
                   <Trash2 size={11} />
