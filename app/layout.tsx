@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { PinGate } from "./components/PinGate";
 import { PwaRegister } from "./components/PwaRegister";
 
 export const metadata: Metadata = {
@@ -28,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body>
-        {children}
+        <PinGate>{children}</PinGate>
         <PwaRegister />
       </body>
     </html>

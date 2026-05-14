@@ -6294,4 +6294,263 @@ a {
   }
 }
 
+/* ============================== PIN GATE ============================== */
+
+.pin-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 20px;
+  background:
+    radial-gradient(circle at 18% 8%, rgba(255, 45, 149, 0.22), transparent 36rem),
+    radial-gradient(circle at 84% 14%, rgba(0, 232, 255, 0.18), transparent 32rem),
+    radial-gradient(circle at 70% 92%, rgba(179, 98, 255, 0.18), transparent 34rem),
+    linear-gradient(180deg, #07031b 0%, #0d0633 48%, #05021a 100%);
+  overflow: hidden;
+  animation: pin-gate-fade 0.35s ease;
+}
+
+@keyframes pin-gate-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.pin-gate__bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.pin-gate__kanji {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: "Noto Sans TC", "Bungee", sans-serif;
+  font-weight: 900;
+  font-size: clamp(220px, 42vw, 460px);
+  letter-spacing: -0.05em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 45, 149, 0.09);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.pin-gate__card {
+  position: relative;
+  z-index: 1;
+  width: min(380px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 28px 26px 30px;
+  border: 1px solid transparent;
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(20, 9, 46, 0.92), rgba(10, 5, 30, 0.96)) padding-box,
+    linear-gradient(135deg, rgba(255, 45, 149, 0.6), rgba(0, 232, 255, 0.55) 50%, rgba(54, 255, 179, 0.55)) border-box;
+  box-shadow:
+    var(--shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 0 42px rgba(255, 45, 149, 0.18),
+    0 0 80px rgba(0, 232, 255, 0.12);
+  backdrop-filter: blur(22px);
+}
+
+.pin-gate__head {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.pin-gate__kicker {
+  font-family: Bungee, "Noto Sans TC", Inter, sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 8px rgba(0, 232, 255, 0.5);
+}
+
+.pin-gate__head h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.pin-gate__head p {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--muted-dim);
+}
+
+.pin-dots {
+  display: flex;
+  gap: 18px;
+  padding: 6px 0 2px;
+}
+
+.pin-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.04);
+  transition: transform 0.18s, background 0.18s, box-shadow 0.18s, border-color 0.18s;
+}
+
+.pin-dot--filled {
+  background: linear-gradient(135deg, var(--neon-pink), var(--neon-cyan));
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow:
+    0 0 12px rgba(255, 45, 149, 0.6),
+    0 0 22px rgba(0, 232, 255, 0.35);
+  transform: scale(1.05);
+}
+
+.pin-dots--error .pin-dot {
+  border-color: var(--neon-red);
+  background: rgba(255, 61, 77, 0.16);
+  box-shadow: 0 0 12px rgba(255, 61, 77, 0.45);
+}
+
+.pin-dots--shake {
+  animation: pin-shake 0.42s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes pin-shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-8px); }
+  30% { transform: translateX(7px); }
+  45% { transform: translateX(-6px); }
+  60% { transform: translateX(5px); }
+  75% { transform: translateX(-3px); }
+  90% { transform: translateX(2px); }
+}
+
+.pin-gate__msg {
+  margin: 0;
+  min-height: 16px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--muted-dim);
+}
+
+.pin-gate__msg--error {
+  color: var(--neon-red);
+  text-shadow: 0 0 10px rgba(255, 61, 77, 0.4);
+}
+
+.pin-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.pin-key {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  font-family: Bungee, Inter, "Noto Sans TC", sans-serif;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.22)),
+    rgba(20, 10, 44, 0.82);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 6px 18px rgba(0, 0, 0, 0.4);
+  transition:
+    transform 0.1s,
+    border-color 0.18s,
+    box-shadow 0.18s,
+    background 0.18s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.pin-key:hover:not(:disabled):not(.pin-key--ghost) {
+  border-color: rgba(0, 232, 255, 0.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 0 14px rgba(0, 232, 255, 0.25),
+    0 8px 22px rgba(0, 0, 0, 0.45);
+}
+
+.pin-key:active:not(:disabled):not(.pin-key--ghost) {
+  transform: translateY(1px) scale(0.98);
+  border-color: var(--neon-pink);
+  background:
+    linear-gradient(135deg, rgba(255, 45, 149, 0.28), rgba(0, 232, 255, 0.18)),
+    rgba(20, 10, 44, 0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 0 18px rgba(255, 45, 149, 0.45);
+}
+
+.pin-key:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.pin-key--ghost {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.pin-key--back {
+  font-family: Inter, sans-serif;
+  color: var(--muted);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(0, 0, 0, 0.22)),
+    rgba(20, 10, 44, 0.55);
+}
+
+.pin-key--back:hover:not(:disabled) {
+  color: var(--ink);
+  border-color: rgba(255, 45, 149, 0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 12px rgba(255, 45, 149, 0.3);
+}
+
+@media (max-width: 380px) {
+  .pin-gate {
+    padding: 16px 14px;
+  }
+
+  .pin-gate__card {
+    padding: 22px 18px 24px;
+    gap: 14px;
+  }
+
+  .pin-key {
+    height: 56px;
+    font-size: 22px;
+  }
+
+  .pin-dots {
+    gap: 14px;
+  }
+}
+
 /* css-clean pass */
